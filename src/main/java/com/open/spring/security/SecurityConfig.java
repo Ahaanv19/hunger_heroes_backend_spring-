@@ -90,9 +90,23 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/api/**", "/authenticate", "/run/**").permitAll()  // Allow only relevant CORS preflight requests
                         .requestMatchers("/authenticate").permitAll()
                         .requestMatchers(HttpMethod.POST, "/authenticate").permitAll()
+                        // Flask-compatible alias for login (used by Hunger Heroes frontend)
+                        .requestMatchers("/api/authenticate").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/authenticate").permitAll()
                         .requestMatchers("/api/person/create", "/api/person/create/").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/person/create").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/person/create/").permitAll()
+                        // Hunger Heroes: public user signup endpoint (Flask: POST /api/user)
+                        .requestMatchers(HttpMethod.POST, "/api/user").permitAll()
+
+                        // ========== HUNGER HEROES: DONATIONS (public read + create) ==========
+                        .requestMatchers(HttpMethod.GET, "/api/donations/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/donations").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/donations/scan").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/donation/**").permitAll()
+                        // ========== HUNGER HEROES: BUSINESSES (public read) ==========
+                        .requestMatchers(HttpMethod.GET, "/api/businesses").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/businesses/**").permitAll()
                         // Admin-only endpoints, beware of DELETE operations and impact to cascading relational data 
                         .requestMatchers(HttpMethod.DELETE, "/api/person/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/person/**").hasAuthority("ROLE_ADMIN")
@@ -215,10 +229,14 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
         configuration.addAllowedOriginPattern("http://localhost:4500");
+        configuration.addAllowedOriginPattern("http://localhost:4000");
         configuration.addAllowedOriginPattern("https://opencodingsociety.com");
         configuration.addAllowedOriginPattern("http://opencodingsociety.com");
         configuration.addAllowedOriginPattern("https://pages.opencodingsociety.com");
         configuration.addAllowedOriginPattern("https://spring.opencodingsociety.com");
+        // Hunger Heroes frontend (GitHub Pages)
+        configuration.addAllowedOriginPattern("https://ahaanv19.github.io");
+        configuration.addAllowedOriginPattern("https://hungerheros.opencodingsociety.com");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

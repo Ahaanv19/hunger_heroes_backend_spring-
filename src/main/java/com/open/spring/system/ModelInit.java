@@ -304,6 +304,58 @@ public class ModelInit {
                     System.err.println("Failed to ensure 'games' table: " + e.getMessage());
                 }
 
+                // Ensure 'hh_donation' table exists for Hunger Heroes donation API
+                try {
+                    if (dataSource != null) {
+                        try (Connection conn = dataSource.getConnection(); Statement st = conn.createStatement()) {
+                            String createDonation = "CREATE TABLE IF NOT EXISTS hh_donation ("
+                                    + "id TEXT PRIMARY KEY,"
+                                    + "food_name TEXT,"
+                                    + "category TEXT,"
+                                    + "food_type TEXT,"
+                                    + "quantity INTEGER,"
+                                    + "unit TEXT,"
+                                    + "serving_count INTEGER,"
+                                    + "weight_lbs REAL,"
+                                    + "description TEXT,"
+                                    + "expiry_date TEXT,"
+                                    + "storage TEXT,"
+                                    + "allergens TEXT,"
+                                    + "allergen_info TEXT,"
+                                    + "dietary_tags TEXT,"
+                                    + "temperature_at_pickup REAL,"
+                                    + "storage_method TEXT,"
+                                    + "donor_name TEXT,"
+                                    + "donor_email TEXT,"
+                                    + "donor_phone TEXT,"
+                                    + "donor_zip TEXT,"
+                                    + "special_instructions TEXT,"
+                                    + "pickup_location TEXT,"
+                                    + "zip_code TEXT,"
+                                    + "pickup_window_start TEXT,"
+                                    + "pickup_window_end TEXT,"
+                                    + "status TEXT DEFAULT 'posted',"
+                                    + "created_at TEXT,"
+                                    + "claimed_by TEXT,"
+                                    + "claimed_at TEXT,"
+                                    + "delivered_by TEXT,"
+                                    + "delivered_at TEXT,"
+                                    + "accepted_by TEXT,"
+                                    + "accepted_at TEXT,"
+                                    + "archived INTEGER DEFAULT 0,"
+                                    + "scan_count INTEGER DEFAULT 0,"
+                                    + "user_id INTEGER,"
+                                    + "donor_id INTEGER,"
+                                    + "receiver_id INTEGER"
+                                    + ");";
+                            st.execute(createDonation);
+                            System.out.println("Ensured 'hh_donation' table exists");
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.err.println("Failed to ensure 'hh_donation' table: " + e.getMessage());
+                }
+
             if (new File("volumes/.skip-modelinit").exists()) {
                 System.out.println("Skip flag detected, ModelInit will not run");
                 return;

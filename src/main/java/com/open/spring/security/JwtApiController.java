@@ -57,7 +57,7 @@ public class JwtApiController {
 	@Value("${server.servlet.session.cookie.name:sess_java_spring}")
 	private String sessionCookieName;
 
-	@PostMapping("/authenticate")
+	@PostMapping({"/authenticate", "/api/authenticate"})
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody Person authenticationRequest, HttpServletRequest request) throws Exception {
 		String resolvedUid = resolveUid(authenticationRequest);
 		if (resolvedUid == null) {
