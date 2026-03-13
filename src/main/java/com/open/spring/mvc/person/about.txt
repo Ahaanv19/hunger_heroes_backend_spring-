@@ -1,0 +1,9 @@
+The "person" folder contains entities related to the "Person" entity.
+
+It has 3 kinds of classes: 
+1- Enitities
+2- Controllers
+3- Jpa Repositories
+
+The "Person" Enitity is main class for the users.
+

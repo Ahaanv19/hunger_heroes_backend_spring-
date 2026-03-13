@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag"></th:block>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" th:href="@{/assets/css/bathroom.css}" />
+</head>
+<body>
+    <!-- page title -->
+    <th:block layout:fragment="title" th:remove="tag">Bathroom Statistics</th:block>
+    <th:block layout:fragment="body" th:remove="tag">
+        <div class="container py-4 bg-primary rounded">
+            <!-- Main page content -->
+            <header class="pb-3 mb-4 border-bottom">
+                <a href="#" class="d-flex align-items-center text-light text-decoration-none">
+                    <span class="fs-4">Tinkle View</span>
+                </a>
+                <div sec:authorize="hasRole('ROLE_ADMIN')">
+                    <button class="btn btn-info btn-sm" id="export-all">Export Tinkle Data</button>
+                    <button class="btn btn-info btn-sm" id="clear-all">Clear Tinkle Data</button>
+                    <button class="btn btn-info btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#importCollaspe" aria-expanded="false" aria-controls="importCollaspe">Import Tinkle Data</button>
+                    <br>
+                    <div class="collapse" id="importCollaspe">
+                        <div class="card card-body bg-success border-muted">
+                            <input id="personAllFileUpload" type="file" accept=".json">
+                            <button id="import-all" class="btn btn-secondary btn-sm">Import Tinkle Data From File</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <header class="pb-3 mb-4">
+                <a href="https://pages.opencodingsociety.com/bathroom/teacher" target="_blank" class="weekday-tab active" id="bathroomPassLink">
+                    Go to Bathroom Pass
+                </a>
+            </header>
+
+            <!-- Daily User Entries Section with Weekday Tabs -->
+            <div class="container py-4 text-light bg-success rounded">
+                <h2>User Entries by Day</h2>
+                
+                <!-- Current Week Indicator -->
+                <div class="current-week-indicator" th:text="${'Current Week: ' + currentWeekStart + ' to ' + currentWeekEnd}"></div>
+                
+                <!-- Weekday Tabs (Monday-Friday only) -->
+                <div class="weekday-tabs">
+                    <div class="weekday-tab" th:each="weekday : ${weekdays}" 
+                         th:text="${weekday.name}" 
+                         th:classappend="${weekday.isToday} ? 'active' : ''" 
+                         th:data-day="${weekday.date}"></div>
+                </div>
+                
+                <!-- Weekday Content Sections -->
+                <div id="weekdayContent">
+                    <div th:each="weekday : ${weekdays}" class="weekday-content" 
+                         th:classappend="${weekday.isToday} ? 'active' : ''" 
+                         th:id="${'content-' + weekday.date}">
+                        
+                        <div th:if="${weekday.entries != null and !weekday.entries.isEmpty()}">
+                            <div class="table-responsive">
+                                <table class="table dailyTable">
+                                    <thead>
+                                        <tr>
+                                            <th class="sortable-header">Person Name</th>
+                                            <th class="sortable-header">Time In</th>
+                                            <th class="sortable-header">Duration (HH:MM:SS)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="entry : ${weekday.entries}">
+                                            <td th:text="${entry.person_name}"></td>
+                                            <td th:text="${entry.timeIn}"></td>
+                                            <td th:text="${entry.duration}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div th:if="${weekday.entries == null or weekday.entries.isEmpty()}" class="text-center py-3">
+                            <p>No entries for this day</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Existing Duration by week section and Data Visualization remain the same -->
+            <div class="container py-4 bg-primary rounded mt-4">
+                <header class="pb-3 mb-4 border-bottom">
+                    <a href="#" class="d-flex align-items-center text-light text-decoration-none">
+                        <span class="fs-4">Duration by week</span>
+                    </a>
+                </header>
+
+                <div class="container py-4 text-light bg-success rounded">
+                    <h2>Average Weekly Duration per User</h2>
+
+                    <div class="row align-items-md-stretch">
+                        <div class="table-responsive">
+                            <table id="weeklyDurationTable" class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="sortable-header">Person Name</th>
+                                        <th class="sortable-header">Average weekly duration</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="entry : ${averageWeeklyDurations}">
+                                        <td th:text="${entry.key}"></td>
+                                        <td th:text="${entry.value}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container py-4 bg-primary rounded mt-4">
+                <header class="pb-3 mb-4 border-bottom">
+                    <a href="#" class="d-flex align-items-center text-light text-decoration-none">
+                        <span class="fs-4">Data Visualization</span>
+                    </a>
+                </header>
+
+                <div class="container py-4 text-light bg-success rounded">
+                    <h2>Average Weekly Duration Visualization</h2>
+
+                    <div class="row align-items-md-stretch">
+                        <div class="chart-container">
+                            <canvas id="weeklyDurationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+
+        <script th:inline="javascript">
+            $(document).ready(function () {
+                // Check if tables exist and have rows before initializing
+                if ($('.dailyTable').length > 0) {
+                    try {
+                        $('.dailyTable').DataTable({
+                            paging: true,
+                            searching: true,
+                            ordering: true,
+                            // Start with no initial ordering to avoid potential issues
+                            order: [], 
+                            lengthMenu: [5, 10, 25, 50],
+                            pageLength: 10,
+                            responsive: true,
+                            autoWidth: false,
+                            language: {
+                                search: "🔍 Search:",
+                                lengthMenu: "Show _MENU_ entries per page",
+                                zeroRecords: "No matching records found",
+                                info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                                infoFiltered: "(filtered from _MAX_ total entries)",
+                                paginate: {
+                                    first: '<i class="bi bi-chevron-double-left"></i>',
+                                    last: '<i class="bi bi-chevron-double-right"></i>',
+                                    next: '<i class="bi bi-chevron-right"></i>',
+                                    previous: '<i class="bi bi-chevron-left"></i>'
+                                }
+                            }
+                        });
+                        
+                        // Only apply ordering after DataTable is initialized successfully
+                        // This separates initialization from ordering application
+                        setTimeout(function() {
+                            try {
+                                $('.dailyTable').DataTable().order([1, 'desc']).draw();
+                            } catch(e) {
+                                console.error("Error applying order to dailyTable:", e);
+                            }
+                        }, 200);
+                    } catch(e) {
+                        console.error("Error initializing dailyTable:", e);
+                    }
+                }
+
+                // Similar defensive approach for weekly duration table
+                if ($('#weeklyDurationTable').length > 0) {
+                    try {
+                        $('#weeklyDurationTable').DataTable({
+                            paging: true,
+                            searching: true,
+                            ordering: true,
+                            order: [], // Start with no ordering
+                            lengthMenu: [5, 10, 25, 50],
+                            pageLength: 10,
+                            responsive: true,
+                            autoWidth: false,
+                            language: {
+                                search: "🔍 Search:",
+                                lengthMenu: "Show _MENU_ entries per page",
+                                zeroRecords: "No matching records found",
+                                info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                                infoFiltered: "(filtered from _MAX_ total entries)",
+                                paginate: {
+                                    first: '<i class="bi bi-chevron-double-left"></i>',
+                                    last: '<i class="bi bi-chevron-double-right"></i>',
+                                    next: '<i class="bi bi-chevron-right"></i>',
+                                    previous: '<i class="bi bi-chevron-left"></i>'
+                                }
+                            }
+                        });
+                        
+                        // Apply ordering after initialization
+                        setTimeout(function() {
+                            try {
+                                $('#weeklyDurationTable').DataTable().order([1, 'desc']).draw();
+                            } catch(e) {
+                                console.error("Error applying order to weeklyDurationTable:", e);
+                            }
+                        }, 200);
+                    } catch(e) {
+                        console.error("Error initializing weeklyDurationTable:", e);
+                    }
+                }
+
+
+                const labels = /*[[${chartLabels}]]*/ [];
+                const data = /*[[${chartData}]]*/ [];
+                const formattedData = data.map(seconds => (seconds / 60).toFixed(2));
+
+                // Sort the data from greatest to least
+                const sortedEntries = labels
+                    .map((label, index) => ({ label, value: parseFloat(formattedData[index]) }))
+                    .sort((a, b) => b.value - a.value);
+
+                // Pagination variables
+                const pageSize = 15;
+                let currentPage = 0;
+
+                const totalPages = Math.ceil(sortedEntries.length / pageSize);
+
+                // Create Chart instance
+                const ctx = $('#weeklyDurationChart')[0].getContext('2d');
+                const chart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Average Weekly Duration (Minutes)',
+                            data: [],
+                            backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                            borderColor: 'rgba(40, 167, 69, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'Duration (Minutes)' }
+                            },
+                            x: { title: { display: true, text: 'Users' } }
+                        }
+                    }
+                });
+
+                function updateChartPage(page) {
+                    const start = page * pageSize;
+                    const end = start + pageSize;
+                    const pageData = sortedEntries.slice(start, end);
+
+                    chart.data.labels = pageData.map(entry => entry.label);
+                    chart.data.datasets[0].data = pageData.map(entry => entry.value);
+                    chart.update();
+
+                    $('#chartPagination').text(`Page ${page + 1} of ${totalPages}`);
+                }
+
+                // Add pagination controls
+                const paginationControls = `
+                    <div class="text-center mt-3">
+                        <button id="prevPage" class="btn btn-light btn-sm me-2">Prev</button>
+                        <span id="chartPagination"></span>
+                        <button id="nextPage" class="btn btn-light btn-sm ms-2">Next</button>
+                    </div>
+                `;
+                $('.chart-container').after(paginationControls);
+
+                $('#prevPage').click(() => {
+                    if (currentPage > 0) {
+                        currentPage--;
+                        updateChartPage(currentPage);
+                    }
+                });
+
+                $('#nextPage').click(() => {
+                    if (currentPage < totalPages - 1) {
+                        currentPage++;
+                        updateChartPage(currentPage);
+                    }
+                });
+
+                // Initialize first page
+                updateChartPage(currentPage);
+
+                // Weekday tabs functionality
+                $('.weekday-tab').click(function() {
+                    // Remove active class from all tabs and content
+                    $('.weekday-tab').removeClass('active');
+                    $('.weekday-content').removeClass('active');
+                    
+                    // Add active class to clicked tab
+                    $(this).addClass('active');
+                    
+                    // Show corresponding content
+                    const dayDate = $(this).data('day');
+                    $('#content-' + dayDate).addClass('active');
+                });
+
+                // (Optional) Highlight excessive duration pairs similar to your current code
+                const thresholdMinutes = 15;
+                $('.time-in-cell').each(function () {
+                    const cellText = $(this).text().trim();
+                    if (!cellText) return;
+                    const pairs = cellText.split(',');
+                    const newHTML = pairs.map(pair => {
+                        let trimmed = pair.trim();
+                        let times = trimmed.split("--");
+                        if (times.length === 2) {
+                            const startParts = times[0].split(':');
+                            const endParts = times[1].split(':');
+                            const startMinutes = parseInt(startParts[0]) * 60 + parseInt(startParts[1]);
+                            const endMinutes = parseInt(endParts[0]) * 60 + parseInt(endParts[1]);
+                            const diffMinutes = endMinutes - startMinutes;
+                            if (diffMinutes > thresholdMinutes) {
+                                return `<span class="highlight-long">${trimmed}</span>`;
+                            }
+                        }
+                        return trimmed;
+                    }).join(", ");
+                    $(this).html(newHTML);
+                });
+            });
+        </script>
+    </th:block>
+</body>
+<th:block layout:fragment="script" th:remove="tag">
+    <!-- script for extracting/importing people (not included if user is not admin)-->
+    <script sec:authorize="hasRole('ROLE_ADMIN')" type="module" src="/static/js/bathroom/bathroom-extraction.js"
+        th:src="@{/js/bathroom/bathroom-extraction.js}"></script>
+    <script sec:authorize="hasRole('ROLE_ADMIN')" type="module" src="/static/js/bathroom/bathroom-clear.js"
+        th:src="@{/js/bathroom/bathroom-clear.js}"></script>
+    <script sec:authorize="hasRole('ROLE_ADMIN')" type="module" src="/static/js/bathroom/bathroom-importation.js"
+        th:src="@{/js/bathroom/bathroom-importation.js}"></script>
+</th:block>
+</html>

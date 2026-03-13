@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/style-only}" lang="en">
+
+<th:block layout:fragment="body" th:remove="tag">
+    <div class="container py-4">
+        <!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+        <h3>Update Info</h3> <!-- Header for Update Info section -->
+        <form class="form-inline" action="#" th:action="@{/mvc/person/update}" th:object="${person}" method="POST"
+            onsubmit="(function(event){event.submitter.innerHTML='<span class=\'spinner-border spinner-border-sm\' role=\'status\' aria-hidden=\'true\'></span>';})(event)">
+
+            <div class="form-group mb-2 mr-sm-2">
+                <input class="form-control mb-2 mr-sm-2" type="text" th:field="*{name}" id="name"
+                    placeholder="Display Name">
+            </div>
+
+            <div class="form-group mb-2 mr-sm-2" style="display: none;">
+                <input class="form-control mb-2 mr-sm-2" type="text" th:field="*{uid}" id="uid"
+                    placeholder="Uid Address" required>
+            </div>
+
+            <!-- Email input field -->
+            <div class="form-group mb-2 mr-sm-2">
+                <input class="form-control mb-2 mr-sm-2" type="email" th:field="*{email}" id="email"
+                    placeholder="Email Address" required>
+            </div>
+
+            <div class="form-group mb-2 mr-sm-2">
+                <input class="form-control mb-2 mr-sm-2" type="password" name="password" id="password"
+                    placeholder="New Password (optional)" autocomplete="new-password">
+            </div>
+
+            <div class="form-group mb-2 mr-sm-2">
+                <input class="form-control mb-2 mr-sm-2" type="password" name="currentPassword" id="currentPassword"
+                    placeholder="Current Password (required for email/password changes)" autocomplete="current-password">
+            </div>
+
+            <div class="form-group mb-2 mr-sm-2">
+                <input class="form-control mb-2 mr-sm-2" type="text" th:field="*{sid}" id="sid"
+                    placeholder="Student ID#">
+            </div>
+
+            <div class="form-group mb-2 mr-sm-2">
+                <label for="kasmServerNeeded">Request Kasm Server:</label>
+                <input class="form-check-input mb-2 mr-sm-2" type="checkbox" th:field="*{kasmServerNeeded}"
+                    id="kasmServerNeeded">
+            </div>
+
+            <button class="btn btn-secondary btn-sm" type="submit">Update Account</button>
+        </form>
+    </div>
+</th:block>
+
+</html>

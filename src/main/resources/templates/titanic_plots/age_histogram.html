@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="title" th:remove="tag">Titanic Analysis</th:block>
+
+<th:block layout:fragment="body" th:remove="tag">
+  <div class="container">
+    <h2>Titanic Data Analysis</h2>
+    <a href="/titanic" class="btn btn-secondary mb-3">← Back to Dashboard</a>
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h4>AGE HISTOGRAM</h4>
+      </div>
+      <div class="card-body">
+        <div id="plot-container" style="width:100%; height:400px;"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header bg-light">
+        <h4>Statistical Analysis</h4>
+      </div>
+      <div class="card-body">
+        <div class="row mt-4">  <div class="col-md-6">    <h5>Age Statistics</h5>    <table class="table table-bordered">      <thead><tr><th>Group</th><th>Mean Age</th><th>Median Age</th></tr></thead>      <tbody>        <tr><td>Survivors</td><td>28.3</td><td>28.0</td></tr>        <tr><td>Non-Survivors</td><td>30.6</td><td>28.0</td></tr>      </tbody>    </table>  </div>  <div class="col-md-6">    <h5>Key Finding</h5>    <p>The average age of survivors (28.3) was lower than non-survivors (30.6).</p>    <p>This supports the priority given to children during evacuation.</p>  </div></div>
+      </div>
+    </div>
+  </div>
+</th:block>
+
+<th:block layout:fragment="script" th:remove="tag">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const trace = {
+        x: [22, 38, 26, 35, 35, null, 54, 2, 27, 14, 4, 58, 20, 39, 14, 55, 2, null, 31, null, 35, 34, 15, 28, 8, 38, null, 19, null, null, 40, null, null, 66, 28, 42, null, 21, 18, 14, 40, 27, null, 3, 19, null, null, null, null, 18, 7, 21, 49, 29, 65, null, 21, 28.5, 5, 11, 22, 38, 45, 4, null, null, 29, 19, 17, 26, 32, 16, 21, 26, 32, 25, null, null, 0.83, 30, 22, 29, null, 28, 17, 33, 16, null, 23, 24, 29, 20, 46, 26, 59, null, 71, 23, 34, 34, 28, null, 21, 33, 37, 28, 21, null, 38, null, 47, 14.5, 22, 20, 17, 21],
+        type: 'histogram',
+        marker: {
+          color: 'rgba(52, 152, 219, 0.7)',
+          line: {
+            color: 'rgba(52, 152, 219, 1.0)',
+            width: 1
+          }
+        }
+      };
+
+      const layout = {
+        title: 'AGE HISTOGRAM DISTRIBUTION',
+        xaxis: {
+          title: 'Age'
+        },
+        yaxis: {
+          title: 'Count'
+        },
+        bargap: 0.05
+      };
+
+      Plotly.newPlot('plot-container', [trace], layout);
+    });
+  </script>
+</th:block>
+</html>

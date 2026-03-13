@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<!-- Bootstrap Navigation Code -->
+<th:block xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+    th:fragment="overlay">
+    <style>
+        #overlay {
+            z-index: 2;
+            position: fixed;
+            background-color: rgba(128, 128, 128, .7);
+            width: 80%;
+            height: 80%;
+            left: 10%;
+            top: 10%;
+            display: none;
+            overflow-y: auto;
+        }
+    </style>
+    <div id="overlay" class="rounded">
+        <button class="btn btn-danger btn-sm" onclick="closeOverlay()">Close</button>
+        <th:block layout:fragment="overlay-body" th:remove="tag"></th:block>
+    </div>
+    <div>
+        <script>
+            function closeOverlay() {
+                document.getElementById("overlay").style.display = "none";
+            }
+        </script>
+</th:block>

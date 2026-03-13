@@ -1,0 +1,85 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        #cookie {
+            display: block;
+            background: rgb(131, 58, 180);
+            background: linear-gradient(90deg, rgba(131, 58, 180, 1) 0%, rgba(253, 29, 29, 1) 50%, rgba(252, 176, 69, 1) 100%);
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            filter: none;
+            height: 10%;
+            width: auto;
+            transition: .25s linear;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .gradient {
+            background: rgb(131, 58, 180);
+            background: linear-gradient(90deg, rgba(131, 58, 180, 1) 0%, rgba(253, 29, 29, 1) 50%, rgba(252, 176, 69, 1) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradientB {
+            background: rgb(252, 176, 69);
+            background: linear-gradient(90deg, rgba(252, 176, 69, 1) 0%, rgba(253, 29, 29, 1) 50%, rgba(131, 58, 180, 1) 100%);
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="title" th:remove="tag">Cookie Clicker</th:block>
+
+<th:block layout:fragment="body" th:remove="tag">
+   
+    <div class="container">
+        <h3>Cookie Clicker</h3> <!-- Header for Update Info section -->
+        <table id="personTable" class="table">
+            <thead>
+                <tr th:each="person : ${list}">
+                    <div>
+                        <!-- Profile picture with fallback image on error -->
+                        <a id="profile-link-${person.id}" data-person-id="${person.id}" target="_blank">
+                            <img id="cookie" th:src="|https://github.com/${person.uid}.png|" alt="Profile Picture"
+                                onerror="this.onerror=null; this.src='https://github.com/user-attachments/assets/13dec9b2-21d6-458e-b099-f5f85ae9caf2';" />
+                            <input type="text" th:value="${person.uid}" id="uid" placeholder="Uid Address"
+                                style="display: none;">
+                        </a>
+                        <a id="uid" value="${person.uid}" style="display: none;"></a>
+                    </div>
+                </tr>
+            </thead>
+            <tbody>
+                <td>
+                    <p>
+                        <b id="counter">
+                            amount: 0
+                        </b>
+                    </p>
+                </td>
+                <td>
+                    <button id="multiplier">basic cookie, 10 cookies</button>
+                </td>
+                <td>
+                    <button id="passive">basic cookie oven, 100 cookies</button>
+                </td>
+                <td>
+                    <button id="sacrifice">SACRIFICE THE COOKIES!, 1000 cookies</button>
+                </td>
+            </tbody>
+        </table>
+        
+    </div>
+</th:block>
+
+<th:block layout:fragment="script" th:remove="tag">
+    <script type="text/javascript" src="/static/js/cookie/cookie-clicker.js" th:src="@{/js/cookie/cookie-clicker.js}"></script>
+     <script type="text/javascript" src="/static/js/cookie/cookie-movement.js" th:src="@{/js/cookie/cookie-movement.js}"></script>
+</th:block>
+
+</html>

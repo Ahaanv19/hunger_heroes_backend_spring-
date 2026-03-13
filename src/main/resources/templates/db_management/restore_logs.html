@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- Use standard layout styling -->
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        nav.navbar, header.navbar, .navbar {
+            display: none !important;
+        }
+    </style>
+</th:block>
+
+<head>
+    <link rel="stylesheet" th:href="@{/assets/css/bathroom.css}" />
+</head>
+
+<body>
+    <!-- Page title -->
+    <th:block layout:fragment="title" th:remove="tag">Database Restore Logs</th:block>
+
+    <!-- Page body -->
+    <th:block layout:fragment="body" th:remove="tag">
+        <div class="container py-4 bg-primary rounded">
+            <header class="pb-3 mb-4 border-bottom">
+                <a href="#" class="d-flex align-items-center text-light text-decoration-none">
+                    <span class="fs-4">Database Restore Logs</span>
+                </a>
+                <p class="text-light">View the logs of restore operations</p>
+            </header>
+
+            <div th:if="${logs.isEmpty()}" class="alert alert-info">
+                No restore operations have been logged yet.
+            </div>
+
+            <div th:if="${!logs.isEmpty()}" class="mt-4">
+                <div class="card">
+                    <div class="card-header">
+                        Restore Logs
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li th:each="log : ${logs}" class="list-group-item">
+                            <span th:if="${log.contains('FAILED')}" class="text-danger fw-bold" th:text="${log}"></span>
+                            <span th:unless="${log.contains('FAILED')}" th:text="${log}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-4 p-4 bg-success rounded text-light">
+                <h4>Back to Backups</h4>
+                <a th:href="@{/api/imports/backups}" class="btn btn-secondary">Back to Backup Management</a>
+            </div>
+        </div>
+    </th:block>
+</body>
+</html>

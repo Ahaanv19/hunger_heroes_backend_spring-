@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .container-page {
+            max-width: 600px;
+        }
+
+        #additionalInput {
+            display: none;
+            /* Initially hidden */
+        }
+    </style>
+</th:block>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">Hall Pass</th:block>
+
+<!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+<th:block layout:fragment="body" th:remove="tag">
+    <div class="container py-4 bg-primary text-black">
+        <header class="pb-3 mb-4 border-bottom">
+            <a href="#" class="d-flex align-items-center text-light text-decoration-none">
+                <span class="fs-4" th:text="'Welcome '+ ${username} "></span>
+            </a>
+        </header>
+
+        <!-- Error message if teacher is not found -->
+        <div th:if="${error}" class="alert alert-danger" role="alert">
+            <p th:text="'Teacher not found. Scan QR Code again. Reach out to your teacher for assistance.'"></p>
+        </div>
+
+        <!-- Show Hall Pass form only if teacher is found (no error) -->
+        <div th:if="${teacher}" class="bg-light p-4 rounded">
+            <h2 th:text="'Hall Pass for ' + ${teacher.firstname} + ' ' + ${teacher.lastname}"></h2>
+            <a href='https://pages.opencodingsociety.com/bathroom' class='button-link'>Current Queue</a>
+            <br><a href='https://pages.opencodingsociety.com/issue' class='button-link'>Report Issues</a>
+            <br><a href='https://pages.opencodingsociety.com/profile' class='button-link'>Profile</a>
+            <div th:if="${activePass}">
+                <h3>You have an active hall pass. Please check-in to end session</h3>
+                <p><strong>Teacher:</strong> <span
+                        th:text="${activepassteacher.firstname} + ' ' + ${activepassteacher.lastname}"></span></p>
+                <p><strong>Activity:</strong> <span th:text="${activePass.activity}"></span></p>
+                <p><strong>Period:</strong> <span th:text="${activePass.period}"></span></p>
+
+                <form th:action="@{/mvc/bathroom/checkoutPass}" method="post">
+
+                    <button type="submit" class="btn btn-primary">Check In</button>
+                </form>
+            </div>
+            <!-- Request form, hidden if there is an active pass -->
+            <div th:if="${activePass == null}">
+                <form th:action="@{/mvc/bathroom/requestPass}" method="post">
+                    <input type="hidden" name="teacherId" th:value="${teacher.id}" />
+                    <div class="form-group">
+                        <label for="period">Period:</label>
+                        <select id="period" name="period" class="form-control" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="activity">Activity:</label>
+                        <select id="activity" name="activity" class="form-control" required>
+                            <option value="bathroom">Bathroom</option>
+                            <option value="library">Library</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary mt-3">Request Hall Pass</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+<!-- End of the body fragment -->
+
+</html>

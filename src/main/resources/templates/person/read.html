@@ -1,0 +1,347 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        /* Initial styling for the profile picture */
+        .profile-picture-container img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            opacity: 1;
+            transform-origin: bottom center;
+            /* Set anchor point to bottom center */
+        }
+
+        /* Enlarges the profile picture when hovered */
+        .profile-picture-container:hover img {
+            transform: scale(2);
+            /* Enlarges the image */
+            opacity: 1;
+        }
+    </style>
+</th:block>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">Person List</th:block>
+
+<th:block layout:fragment="body" th:remove="tag">
+    <div class="container">
+
+        <h3>Person Viewer</h3>
+
+        <!-- Column visibility toggle buttons -->
+        <div class="d-flex flex-wrap mb-3">
+            <button class="btn btn-secondary toggle-column active" data-column="0">ID#</button>
+            <button class="btn btn-secondary toggle-column active" data-column="1">UID</button>
+            <button class="btn btn-secondary toggle-column active" data-column="2">Name</button>
+            <button class="btn btn-secondary toggle-column inactive" data-column="3">Email</button>
+            <button class="btn btn-secondary toggle-column inactive" data-column="4">KSM</button>
+            <button class="btn btn-secondary toggle-column active" data-column="5">PFP</button>
+            <button class="btn btn-secondary toggle-column inactive" data-column="6">SID</button>
+            <button class="btn btn-secondary toggle-column active" data-column="7">Action</button>
+            <button class="btn btn-secondary toggle-column inactive" data-column="8">Import/Export</button>
+        </div>
+        <br>
+
+        <div class="row align-items-md-stretch table-responsive">
+            <!-- Table displaying the list of persons -->
+            <table id="personTable" class="table">
+                <thead>
+                    <tr>
+                        <th>ID#</th>
+                        <th>UID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>KSM</th>
+                        <th>PFP</th>
+                        <th>SID</th>
+                        <th>Action</th>
+                        <th>Import/Export</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="person : ${list}">
+                        <td th:text="${person.id}">Person ID</td>
+                        <td>
+                            <a th:href="'https://github.com/' + ${person.uid}" target="_blank"
+                                th:text="${person.uid}">User UID</a>
+                        </td>
+                        <td th:text="${person.name}">Name</td>
+                        <td th:text="${person.email}">Email</td>
+                        <td>
+                            <img th:src="@{${person.kasmServerNeeded} ? 'https://github.com/user-attachments/assets/da1c6827-8c47-4ba9-a979-980eb3c685cd' : 'https://github.com/user-attachments/assets/53e808fc-3c01-4cae-b403-73116a71122f'}"
+                                class="custom-checkbox" alt="KSM Status" style="width: 20px; height: 20px;" />
+                        </td>
+                        <td>
+                            <div class="profile-picture-container">
+                                <a id="profile-link-${person.id}" th:data-person-id="${person.id}" target="_blank">
+                                    <img id="profile-img-${person.id}"
+                                        th:src="${#strings.isEmpty(person.pfp)} ? 'https://github.com/' + person.uid + '.png' : person.pfp"
+                                        alt="Profile Picture"
+                                        onerror="this.onerror=null; this.src='/images/default.png';" />
+                                </a>
+                            </div>
+                        </td>
+                        <td th:text="${person.sid}">Student ID</td>
+                        <td>
+                            <a th:href="@{/mvc/person/update/{id}(id = ${person.id})}" class="btn btn-warning btn-sm"
+                                name="update">Update</a>
+                            <a sec:authorize="hasRole('ROLE_ADMIN')"
+                                th:href="@{/mvc/person/update/roles/{id}(id = ${person.id})}"
+                                class="btn btn-warning btn-sm" name="update">Update Roles</a>
+                            <button sec:authorize="hasRole('ROLE_ADMIN')"
+                                class="btn btn-secondary btn-sm"
+                                th:attr="data-id=${person.id}, data-name=${person.name}"
+                                onclick="openResetModal(this)">Reset Password</button>
+                            <a th:href="@{/mvc/person/delete/{id}(id = ${person.id})}"
+                                class="btn btn-danger btn-sm">Delete</a>
+                        </td>
+                        <td>
+                            <button class="btn btn-info btn-sm" th:attr="data-id=${person.id}" onclick="exportRow(this)">Export</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-3">
+            <button class="btn btn-success" onclick="exportCSV()">Export CSV</button>
+            <button class="btn btn-info" onclick="document.getElementById('csvFileInput').click()">Import CSV</button>
+            <input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="importCSV(event)">
+        </div>
+
+    </div>
+</th:block>
+
+<!-- Overlay for update page-->
+<th:block layout:fragment="overlay-body" th:remove="tag">
+    <div id="overlay-Container"></div>
+</th:block>
+
+<!-- scripts -->
+<th:block layout:fragment="script" th:remove="tag">
+    <!-- Admin Reset Password Modal -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resetPasswordModalLabel">Reset Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Reset password for <strong id="resetPersonName"></strong> to the default password?</p>
+                    <div id="resetModalMessage" class="alert d-none"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-warning" id="confirmResetBtn" onclick="confirmReset()">Reset Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let resetPersonId = null;
+
+        function openResetModal(btn) {
+            resetPersonId = btn.getAttribute('data-id');
+            document.getElementById('resetPersonName').textContent = btn.getAttribute('data-name');
+            const msgEl = document.getElementById('resetModalMessage');
+            msgEl.className = 'alert d-none';
+            msgEl.textContent = '';
+            const modal = new bootstrap.Modal(document.getElementById('resetPasswordModal'));
+            modal.show();
+        }
+
+        function confirmReset() {
+            if (!resetPersonId) return;
+            const btn = document.getElementById('confirmResetBtn');
+            btn.disabled = true;
+            fetch('/mvc/person/reset/admin/' + resetPersonId, { method: 'POST' })
+                .then(res => {
+                    const msgEl = document.getElementById('resetModalMessage');
+                    msgEl.classList.remove('d-none');
+                    if (res.ok) {
+                        msgEl.className = 'alert alert-success';
+                        msgEl.textContent = 'Password reset to default successfully.';
+                        setTimeout(() => bootstrap.Modal.getInstance(document.getElementById('resetPasswordModal')).hide(), 1500);
+                    } else if (res.status === 403) {
+                        msgEl.className = 'alert alert-danger';
+                        msgEl.textContent = 'Permission denied.';
+                    } else if (res.status === 404) {
+                        msgEl.className = 'alert alert-danger';
+                        msgEl.textContent = 'User not found.';
+                    } else {
+                        msgEl.className = 'alert alert-danger';
+                        msgEl.textContent = 'Reset failed.';
+                    }
+                    btn.disabled = false;
+                })
+                .catch(() => {
+                    const msgEl = document.getElementById('resetModalMessage');
+                    msgEl.className = 'alert alert-danger';
+                    msgEl.textContent = 'Network error.';
+                    btn.disabled = false;
+                });
+        }
+    </script>
+
+    <script>
+        function exportRow(btn) {
+            const id = btn.getAttribute('data-id');
+            fetch('/person/' + id)
+                .then(res => res.json())
+                .then(data => {
+                    const s = JSON.stringify(data, null, 2);
+                    const blob = new Blob([s], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url; a.download = 'person-' + id + '.json'; a.click();
+                    URL.revokeObjectURL(url);
+                })
+                .catch(e => alert('Export failed: ' + e));
+        }
+
+        function exportCSV() {
+            const table = document.getElementById('personTable');
+            const rows = table.querySelectorAll('tr');
+            let csv = [];
+
+            // Get headers
+            const headers = [];
+            rows[0].querySelectorAll('th').forEach((th, index) => {
+                if (index < rows[0].querySelectorAll('th').length - 2) { // Exclude last 2 columns (Action, Import/Export)
+                    headers.push(th.textContent.trim());
+                }
+            });
+            csv.push(headers.join(','));
+
+            // Get data rows
+            for (let i = 1; i < rows.length; i++) {
+                const row = [];
+                const cols = rows[i].querySelectorAll('td');
+                for (let j = 0; j < cols.length - 2; j++) { // Exclude last 2 columns
+                    let cell = cols[j].textContent.trim();
+                    // Escape commas and quotes
+                    if (cell.includes(',') || cell.includes('"') || cell.includes('\n')) {
+                        cell = '"' + cell.replace(/"/g, '""') + '"';
+                    }
+                    row.push(cell);
+                }
+                csv.push(row.join(','));
+            }
+
+            // Download CSV
+            const csvContent = csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'persons.csv';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        function importCSV(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n');
+
+                if (lines.length < 2) {
+                    alert('CSV file is empty or invalid');
+                    return;
+                }
+
+                // Parse CSV and create persons
+                const headers = lines[0].split(',').map(h => h.trim());
+                let imported = 0;
+                let failed = 0;
+
+                const promises = [];
+                for (let i = 1; i < lines.length; i++) {
+                    if (lines[i].trim() === '') continue;
+
+                    const values = parseCSVLine(lines[i]);
+                    const person = {};
+
+                    headers.forEach((header, index) => {
+                        if (values[index] !== undefined && values[index] !== '') {
+                            person[header] = values[index];
+                        }
+                    });
+
+                    // Send to backend API
+                    const promise = fetch('/person/create', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(person)
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            imported++;
+                        } else {
+                            failed++;
+                        }
+                    })
+                    .catch(error => {
+                        failed++;
+                        console.error('Error importing row:', error);
+                    });
+
+                    promises.push(promise);
+                }
+
+                Promise.all(promises).then(() => {
+                    alert(`Import complete! Imported: ${imported}, Failed: ${failed}`);
+                    location.reload();
+                });
+            };
+
+            reader.readAsText(file);
+        }
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"') {
+                    if (inQuotes && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim());
+            return result;
+        }
+    </script>
+    <!-- script for filtering columns-->
+    <script type="text/javascript" src="/static/js/read-filter.js" th:src="@{/js/read-filter.js}"></script>
+    <!-- script for updating overlay (used for update button)-->
+    <script type="text/javascript" src="/static/js/read-overlay.js" th:src="@{/js/read-overlay.js}"></script>
+</th:block>
+
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag"></th:block>
+
+<head>
+    <script>
+        function validation(event) {
+            event.preventDefault();
+
+            var body = {
+                uid: document.getElementById("uid").value,
+            }
+            fetch("/mvc/person/reset/start", {
+                method: "POST",
+                body: JSON.stringify(body),
+                cache: "no-cache",
+                headers: new Headers({
+                    "content-type": "application/json"
+                })
+            }).then(function (response) {
+                if (response.status !== 200) {
+                    message.style.color = "red";
+                    message.innerText = "Something went wrong. Double check that you inputted the correct uid. Also remember, admins and auto-generated users cannot have their passwords reset by email. You cannot send multiple requests for a password change at a time, each request expires after 5 minutes.";
+                    message.style.display = "block";
+                }
+                else {
+                    window.location.replace("/mvc/person/reset/check");
+                }
+            })
+            return;
+        }
+    </script>
+</head>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">Reset Password</th:block>
+
+<!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+<th:block layout:fragment="body" th:remove="tag">
+    <!-- Heading for the login section, with added left margin for spacing -->
+    <h3 style="margin-left: 10px;">Reset Password</h3>
+    <table>
+        <!-- Form for resetting password. Uses POST method to submit the data to the /mvc/person/reset/start endpoint -->
+        <tr>
+            <td><input type="text" id='uid' name="uid" placeholder="GitHub ID" size="20" required
+                    style="margin-bottom: 10px; margin-left: 10px;"></td>
+        </tr>
+
+        <!-- Submit button for the form, with added margin for spacing -->
+        <tr>
+            <th><input type="button" value="submit" onclick="validation(event)" style="margin-left: 10px;"
+                    class="btn btn-secondary"></th>
+        </tr>
+    </table>
+    <table>
+        <!-- Link to the signup page for users who don't have an account, with added left margin -->
+        <tr>
+            <td><a th:href="@{/mvc/person/reset/check}" style="margin-left: 10px;">Already have a code?</a></td>
+        </tr>
+    </table>
+
+    <table>
+        <!-- Link to the signup page for users who don't have an account, with added left margin -->
+        <tr>
+            <td><a th:href="@{/login}" style="margin-left: 10px;">Login Page</a></td>
+        </tr>
+
+    </table>
+    <label id="message" style="display: none;"></label>
+
+</th:block>
+<!-- End of the body fragment -->
+
+</html>

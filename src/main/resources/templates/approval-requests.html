@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/tinkle-base}" lang="en">
+
+<head>
+    <title>Approval Requests</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        function approveStudent(teacherEmail, studentName) {
+            const now = new Date();
+            const timeIn = now.toLocaleTimeString('en-US', { hour12: false });
+
+            fetch("/api/approval/approveRequest", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ teacherEmail, studentName, timeIn }) 
+            }).then(response => {
+                if (response.ok) {
+                    console.log(`Approved: ${studentName}`);
+                    fetchPendingRequests();
+                } else {
+                    console.log("Failed to approve request.");
+                }
+            });
+        }
+
+        function denyStudent(teacherEmail, studentName) {
+            fetch("/api/approval/denyRequest", { 
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ teacherEmail, studentName })
+            }).then(response => {
+                if (response.ok) {
+                    console.log(`Denied: ${studentName}`);
+                    fetchPendingRequests();
+                } else {
+                    alert("Failed to deny request.");
+                }
+            });
+        }
+
+        function fetchPendingRequests() {
+            fetch("/api/approval/pendingRequests")
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector("#approvalTable tbody");
+                    tableBody.innerHTML = "";
+
+                    data.forEach(request => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+                            <td>${request.studentName}</td>
+                            <td>
+                                <button class="btn btn-success btn-sm"
+                                        onclick="approveStudent('${request.teacherEmail}', '${request.studentName}')">
+                                    Approve
+                                </button>
+                                <button class="btn btn-danger btn-sm"
+                                        onclick="denyStudent('${request.teacherEmail}', '${request.studentName}')">
+                                    Deny
+                                </button>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.log("Error fetching pending requests:", error));
+        }
+
+        setInterval(fetchPendingRequests, 5000);
+        document.addEventListener("DOMContentLoaded", fetchPendingRequests);
+    </script>
+</head>
+
+<body>
+<div class="navbar">Tinkle View Navbar</div>
+<div layout:fragment="body" th:remove="tag">
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Pending Approval Requests</h2>
+        <table id="approvalTable" class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Student Name</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- JS will populate this -->
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

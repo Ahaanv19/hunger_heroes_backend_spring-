@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="title" th:remove="tag">Games List</th:block>
+
+<th:block layout:fragment="body" th:remove="tag">
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <!-- AUTO-GENERATED TABLE - ONE LINE RENDERS EVERYTHING! -->
+        <th:block th:replace="~{fragments/auto-table :: render(config=${tableConfig}, list=${list})}"></th:block>
+    </div>
+    <div sec:authorize="!hasRole('ROLE_ADMIN')" class="container">
+        <div class="alert alert-danger">Access denied: administrators only.</div>
+    </div>
+</th:block>
+
+<!-- Overlay for update page -->
+<th:block layout:fragment="overlay-body" th:remove="tag">
+    <div id="overlay-Container"></div>
+</th:block>
+
+<!-- Generic scripts - work with ANY entity! -->
+<th:block layout:fragment="script" th:remove="tag">
+    <script sec:authorize="hasRole('ROLE_ADMIN')" type="module" th:src="@{/js/entity/entity-extraction.js}"></script>
+    <script sec:authorize="hasRole('ROLE_ADMIN')" type="module" th:src="@{/js/entity/entity-importation.js}"></script>
+    <script type="text/javascript" th:src="@{/js/read-filter.js}"></script>
+    <script type="text/javascript" th:src="@{/js/read-overlay.js}"></script>
+</th:block>
+
+</html>

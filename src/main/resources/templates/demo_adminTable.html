@@ -1,0 +1,279 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        .sort-icon.asc::after {
+            content: "↑";
+            /* Up arrow for ascending */
+        }
+
+        .sort-icon.desc::after {
+            content: "↓";
+            /* Down arrow for descending */
+        }
+    </style>
+</th:block>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
+</head>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">User Table</th:block>
+
+<!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+<th:block layout:fragment="body" th:remove="tag">
+    <h2>Logs of All Users</h2>
+    <table border="1" id="userTable">
+        <thead>
+            <tr>
+                <th>
+                    User ID
+                    <span id="sortUserId" class="sort-icon asc"></span>
+                </th>
+                <th>
+                    User Name
+                </th>
+                <th>
+                    Login Date
+                </th>
+                <th>
+                    Day of Week
+                </th>
+                <th>
+                    Login Time
+                </th>
+                <th>
+                    Logout Time
+                </th>
+                <th>
+                    Duration (minutes)
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:each="user_history : ${users_history}">
+                <td th:text="${user_history.userId}"></td>
+                <td th:text="${user_history.userName}"></td>
+                <td th:text="${user_history.loginDate}"></td>
+                <td th:text="${user_history.dayOfWeek}"></td>
+                <td th:text="${user_history.loginTime}"></td>
+                <td th:text="${user_history.logoutTime}"></td>
+                <td th:text="${user_history.duration}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Table for Total Duration -->
+    <h3>Total Duration for the Week</h3>
+    <table border="1">
+        <tr>
+            <th>User Name</th>
+            <th>Total Duration (minutes)</th>
+        </tr>
+        <!-- <tr th:each="userName, duration : ${totalDurationMap}">
+                <td th:text="${userName}"></td>
+                <td th:text="${duration}"></td>
+            </tr> -->
+        <tr th:each="entry : ${totalDurationMap}">
+            <td th:text="${entry.key}"></td> <!-- Access userId (key) -->
+            <td th:text="${entry.value}"></td> <!-- Access formatted duration (value) -->
+        </tr>
+    </table>
+
+    <!-- Table for Total Occurrences -->
+    <h3>Total Occurrences for the Week</h3>
+    <table border="1">
+        <tr>
+            <th>User Name</th>
+            <th>Total Occurrences</th>
+        </tr>
+        <!-- <tr th:each="userName, occurrences : ${totalOccurrencesMap}">
+                <td th:text="${userName}"></td>
+                <td th:text="${occurrences}"></td>
+            </tr> -->
+        <tr th:each="entry : ${totalOccurrencesMap}">
+            <td th:text="${entry.key}"></td> <!-- Access userId (key) -->
+            <td th:text="${entry.value}"></td> <!-- Access total occurrences (value) -->
+        </tr>
+    </table>
+
+    <!-- Table for Average Duration per Day -->
+    <h3>Average Duration per Day</h3>
+    <table border="1">
+        <tr>
+            <th>User Name</th>
+            <th>Average Duration per Day (HH:MM:SS)</th>
+        </tr>
+        <!-- <tr th:each="userName, avgDuration : ${avgDurationPerDayMap}">
+                <td th:text="${userName}"></td>
+                <td th:text="${avgDuration}"></td>
+            </tr> -->
+        <tr th:each="entry : ${avgDurationPerDayMap}">
+            <td th:text="${entry.key}"></td> <!-- Access userId (key) -->
+            <td th:text="${entry.value}"></td> <!-- Access formatted average duration (value) -->
+        </tr>
+    </table>
+
+
+    <!-- Bar Chart for Total Duration -->
+    <h3>Total Duration per User (Minutes)</h3>
+    <canvas id="totalDurationChart" width="400" height="200"></canvas>
+
+    <!-- Bar Chart for Average Duration -->
+    <h3>Average Duration per User (Minutes)</h3>
+    <canvas id="avgDurationChart" width="400" height="200"></canvas>
+</th:block>
+<!-- End of the body fragment -->
+
+<th:block layout:fragment="script" th:remove="tag">
+    <!-- script for user table-->
+    <script>
+        $(document).ready(function () {
+            $('#sortUserId').on('click', function () {
+                var table = $('#userTable');
+                var rows = table.find('tbody > tr').get();
+                var isAsc = $(this).hasClass('asc');
+
+                // Toggle sort direction
+                $(this).toggleClass('asc', !isAsc).toggleClass('desc', isAsc);
+
+                // Sort rows based on User ID column
+                rows.sort(function (a, b) {
+                    var cellA = $(a).children('td').eq(0).text();
+                    var cellB = $(b).children('td').eq(0).text();
+
+                    // Numeric sort
+                    if ($.isNumeric(cellA) && $.isNumeric(cellB)) {
+                        return isAsc ? cellA - cellB : cellB - cellA;
+                    }
+
+                    // Text sort (fallback)
+                    return isAsc
+                        ? cellA.localeCompare(cellB)
+                        : cellB.localeCompare(cellA);
+                });
+
+                // Append sorted rows back to the table
+                $.each(rows, function (index, row) {
+                    table.children('tbody').append(row);
+                });
+            });
+        });
+
+    </script>
+
+    <!-- script for week total table-->
+    <script th:inline="javascript">
+        // Convert totalDurationMap data from Thymeleaf to JSON
+        /*<![CDATA[*/
+        const totalDurationData = /*[[${totalDurationMap}]]*/ {};
+        /*]]>*/
+
+        // Prepare data for Chart.js
+        const userIds = Object.keys(totalDurationData); // Array of user IDs
+        const durations = Object.values(totalDurationData).map(duration => parseInt(duration)); // Array of durations in minutes
+
+        console.log("User IDs:", userIds); // Log to check
+        console.log("Durations:", durations); // Log to check
+
+        // Set up Chart.js bar chart
+        const ctx = document.getElementById('totalDurationChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: userIds, // User IDs as labels on the X-axis
+                datasets: [{
+                    label: 'Total Duration (Minutes)',
+                    data: durations,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Bar color
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Duration (Minutes)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'User ID'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    </script>
+
+    <!-- script for average durations -->
+    <script th:inline="javascript">
+        // Convert totalDurationMap data from Thymeleaf to JSON
+        /*<![CDATA[*/
+        const avgDurationData = /*[[${avgDurationPerDayMap}]]*/ {};
+        /*]]>*/
+
+        // Prepare data for Chart.js
+        const userIds2 = Object.keys(avgDurationData); // Array of user IDs
+        const durations2 = Object.values(avgDurationData).map(duration => parseInt(duration)); // Array of durations in minutes
+
+        console.log("User IDs:", userIds2); // Log to check
+        console.log("Durations:", durations2); // Log to check
+
+        // Set up Chart.js bar chart
+        const ctx2 = document.getElementById('avgDurationChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: userIds2, // User IDs as labels on the X-axis
+                datasets: [{
+                    label: 'Total Duration (Minutes)',
+                    data: durations2,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Bar color
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Duration (Minutes)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'User ID'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    </script>
+</th:block>
+
+</html>

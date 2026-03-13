@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<!-- Signals to the Layout Dialect which layout should be used to decorate this View -->
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag"></th:block>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">Admin Table</th:block>
+
+<!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+<th:block layout:fragment="body" th:remove="tag"></th:block>
+
+<!-- page script -->>
+<th:block layout:fragment="script" th:remove="tag">
+    <script>
+        const getOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+        window.onload = function()
+        {  
+            fetch('http://localhost:8585/api/admin/all',getOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success', data);
+            })
+        }
+    </script>
+</th:block>
+
+</html>

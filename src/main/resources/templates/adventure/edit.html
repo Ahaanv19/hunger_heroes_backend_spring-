@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="title" th:remove="tag">Adventure Edit</th:block>
+
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        @media (max-width: 767.98px) {
+            .form-row .form-group { width: 100%; padding-left: 0; padding-right: 0; }
+            .form-control { font-size: 1rem; }
+            .container { padding-left: 10px; padding-right: 10px; }
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="body" th:remove="tag">
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="container">
+            <h3 th:text="${adv.id} == null ? 'Create Adventure' : 'Edit Adventure #' + ${adv.id}"></h3>
+
+            <form th:action="@{/adventure/save}" method="post" th:object="${adv}" id="advForm">
+            <input type="hidden" th:field="*{id}" />
+
+            <div class="form-group">
+                <label>Person ID</label>
+                <input class="form-control" th:field="*{personId}" />
+            </div>
+
+            <div class="form-group">
+                <label>Person UID</label>
+                <input class="form-control" th:field="*{personUid}" />
+            </div>
+
+            <div class="form-group">
+                <label>Question Title</label>
+                <input class="form-control" th:field="*{questionTitle}" />
+            </div>
+
+            <div class="form-group">
+                <label>Question Content</label>
+                <textarea class="form-control" th:field="*{questionContent}" rows="4"></textarea>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>Category</label>
+                    <input class="form-control" th:field="*{questionCategory}" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Points</label>
+                    <input class="form-control" th:field="*{questionPoints}" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Balance</label>
+                    <input class="form-control" th:field="*{balance}" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Details (JSON)</label>
+                <textarea class="form-control" th:field="*{details}" rows="6"></textarea>
+            </div>
+
+            <div class="mt-2">
+                <button class="btn btn-primary" type="submit">Save</button>
+                <a class="btn btn-secondary" th:href="@{/mvc/adventure/read}">Cancel</a>
+            </div>
+            </form>
+            <!-- No special assembly script needed: textarea binds directly to Adventure.details. -->
+        </div>
+    </div>
+    <div sec:authorize="!hasRole('ROLE_ADMIN')" class="container">
+        <div class="alert alert-danger">Access denied: administrators only.</div>
+    </div>
+</th:block>
+
+</html>

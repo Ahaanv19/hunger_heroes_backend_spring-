@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="title" th:remove="tag">Titanic Analysis</th:block>
+
+<th:block layout:fragment="body" th:remove="tag">
+  <div class="container">
+    <h2>Titanic Data Analysis</h2>
+    <a href="/titanic" class="btn btn-secondary mb-3">← Back to Dashboard</a>
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h4>FARE HISTOGRAM</h4>
+      </div>
+      <div class="card-body">
+        <div id="plot-container" style="width:100%; height:400px;"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header bg-light">
+        <h4>Statistical Analysis</h4>
+      </div>
+      <div class="card-body">
+        <div class="row mt-4">  <div class="col-md-6">    <h5>Fare Statistics</h5>    <table class="table table-bordered">      <thead><tr><th>Group</th><th>Mean Fare</th><th>Median Fare</th></tr></thead>      <tbody>        <tr><td>Survivors</td><td>$48.40</td><td>$26.00</td></tr>        <tr><td>Non-Survivors</td><td>$22.12</td><td>$10.50</td></tr>      </tbody>    </table>  </div>  <div class="col-md-6">    <h5>Key Finding</h5>    <p>Passengers who paid higher fares had better chances of survival.</p>    <p>The mean fare for survivors ($48.40) was significantly higher than for non-survivors ($22.12).</p>    <p>This suggests that first-class passengers had priority access to lifeboats.</p>  </div></div>
+      </div>
+    </div>
+  </div>
+</th:block>
+
+<th:block layout:fragment="script" th:remove="tag">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const trace = {
+        x: [7.25, 71.28, 7.92, 53.1, 8.05, 8.46, 51.86, 21.07, 11.13, 30.07, 16.7, 26.55, 8.05, 31.28, 7.85, 16, 29.13, 13, 18, 7.23, 26, 13, 8.08, 35.5, 21.08, 31.38, 7.83, 7.08, 7.75, 0, 7.75, 0, 7.75, 83.47, 21, 0, 12.53, 7.65, 77.96, 7.55, 10.5, 51.48, 26.55, 8.05, 81.86, 19.5, 26.55, 7.78, 25.7, 7.23, 7.75, 55.44, 14.5, 7.05],
+        type: 'histogram',
+        marker: {
+          color: 'rgba(52, 152, 219, 0.7)',
+          line: {
+            color: 'rgba(52, 152, 219, 1.0)',
+            width: 1
+          }
+        }
+      };
+
+      const layout = {
+        title: 'FARE HISTOGRAM DISTRIBUTION',
+        xaxis: {
+          title: 'Fare'
+        },
+        yaxis: {
+          title: 'Count'
+        },
+        bargap: 0.05
+      };
+
+      Plotly.newPlot('plot-container', [trace], layout);
+    });
+  </script>
+</th:block>
+</html>

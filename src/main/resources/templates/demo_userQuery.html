@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag"></th:block>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">User Table</th:block>
+
+<!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+<th:block layout:fragment="body" th:remove="tag">
+    <h2>Logs of User Queried</h2>
+    <table border="1">
+        <tr>
+            <th>User ID</th>
+            <th>User Name</th>
+            <th>Login Date</th>
+            <th>Day of Week</th> <!-- New column for Day of Week -->
+            <th>Login Time</th>
+            <th>Logout Time</th>
+            <th>Duration (minutes)</th>
+        </tr>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.userId}"></td>
+            <td th:text="${user.userName}"></td>
+            <td th:text="${user.loginDate}"></td>
+            <td th:text="${user.dayOfWeek}"></td>
+            <td th:text="${user.loginTime}"></td>
+            <td th:text="${user.logoutTime}"></td>
+            <td th:text="${user.duration}"></td>
+        </tr>
+    </table>
+</th:block>
+
+</html>

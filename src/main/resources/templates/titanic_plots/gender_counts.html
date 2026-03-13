@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="title" th:remove="tag">Titanic Analysis</th:block>
+
+<th:block layout:fragment="body" th:remove="tag">
+  <div class="container">
+    <h2>Titanic Data Analysis</h2>
+    <a href="/titanic" class="btn btn-secondary mb-3">← Back to Dashboard</a>
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h4>GENDER COUNTS</h4>
+      </div>
+      <div class="card-body">
+        <div id="plot-container" style="width:100%; height:400px;"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header bg-light">
+        <h4>Statistical Analysis</h4>
+      </div>
+      <div class="card-body">
+        <div class="row mt-4">  <div class="col-md-6">    <h5>Survival Statistics by Gender</h5>    <table class="table table-bordered">      <thead><tr><th>Gender</th><th>Survived</th><th>Perished</th><th>Survival Rate</th></tr></thead>      <tbody>        <tr><td>Male</td><td>109</td><td>468</td><td>18.9%</td></tr>        <tr><td>Female</td><td>233</td><td>81</td><td>74.2%</td></tr>      </tbody>    </table>  </div>  <div class="col-md-6">    <h5>Key Finding</h5>    <p>Women had a much higher survival rate (74.2%) compared to men (18.9%).</p>    <p>This supports the "women and children first" protocol that was followed during the Titanic's evacuation.</p>  </div></div>
+      </div>
+    </div>
+  </div>
+</th:block>
+
+<th:block layout:fragment="script" th:remove="tag">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const trace = {
+        x: ['Male', 'Female'],
+        y: [577, 314],
+        type: 'bar',
+        marker: {
+          color: 'rgba(46, 204, 113, 0.7)',
+          line: {
+            color: 'rgba(46, 204, 113, 1.0)',
+            width: 1
+          }
+        }
+      };
+
+      const layout = {
+        title: 'COUNT BY GENDER COUNTS',
+        xaxis: {
+          title: 'Gender'
+        },
+        yaxis: {
+          title: 'Number of Passengers'
+        }
+      };
+
+      Plotly.newPlot('plot-container', [trace], layout);
+    });
+  </script>
+</th:block>
+</html>

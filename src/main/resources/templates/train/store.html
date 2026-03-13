@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag"></th:block>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">Train Store</th:block>
+
+<!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+<th:block layout:fragment="body" th:remove="tag">
+    <div id="companyContainer"></div>
+    <div id="storeContainer"></div>
+</th:block>
+<!-- End of the body fragment -->
+
+<!-- page style -->
+<th:block layout:fragment="script" th:remove="tag">
+    <script type="text/javascript" src="/static/js/trains/store.js" th:src="@{/js/trains/store.js}"></script>
+</th:block>
+</html>

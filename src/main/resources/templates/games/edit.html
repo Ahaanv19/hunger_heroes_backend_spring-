@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+      layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="title" th:remove="tag">Game Edit</th:block>
+
+<th:block layout:fragment="body" th:remove="tag">
+    <div sec:authorize="hasRole('ROLE_ADMIN')">
+        <div class="container">
+            <h3 th:text="${g.id} == null ? 'Create Game' : 'Edit Game #' + ${g.id}"></h3>
+            <form th:action="@{/game/save}" method="post" th:object="${g}">
+            <input type="hidden" th:field="*{id}" />
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>Type</label>
+                    <input class="form-control" th:field="*{type}" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Person ID</label>
+                    <input class="form-control" th:field="*{personId}" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Person UID</label>
+                    <input class="form-control" th:field="*{personUid}" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label>Bet Amount</label>
+                    <input class="form-control" th:field="*{betAmount}" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Amount</label>
+                    <input class="form-control" th:field="*{amount}" />
+                </div>
+                <div class="form-group col-md-4">
+                    <label>Balance</label>
+                    <input class="form-control" th:field="*{balance}" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Result</label>
+                <input class="form-control" th:field="*{result}" />
+            </div>
+
+            <div class="form-group">
+                <label>Details (JSON)</label>
+                <textarea class="form-control" th:field="*{details}" rows="4"></textarea>
+            </div>
+
+            <div class="mt-2">
+                <button class="btn btn-primary" type="submit">Save</button>
+                <a class="btn btn-secondary" th:href="@{/mvc/games/read}">Cancel</a>
+            </div>
+            </form>
+        </div>
+    </div>
+    <div sec:authorize="!hasRole('ROLE_ADMIN')" class="container">
+        <div class="alert alert-danger">Access denied: administrators only.</div>
+    </div>
+</th:block>
+
+</html>

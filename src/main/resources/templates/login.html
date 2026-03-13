@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag"></th:block>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">Login</th:block>
+
+<!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+<th:block layout:fragment="body" th:remove="tag">
+    <!-- Heading for the login section, with added left margin for spacing -->
+    <h3>Login To Account</h3>
+
+    <!-- Form for logging in. Uses POST method to submit the data to the /login endpoint -->
+    <form name="f" th:action="@{/login}" method="POST">
+
+        <!-- Success message when the user logs out, conditional rendering based on the 'logout' param -->
+        <label for="f" th:if="${param.logout}" class="text-success" style="margin-bottom: 10px; margin-left: 10px;">
+            You have been logged out.
+        </label> <br th:if="${param.logout}">
+
+        <!-- The 'username' input field. The 'uid' field is mapped to 'username' for Spring Security authentication -->
+        <div class="form-group mb-2 mr-sm-2">
+        <input type="text" id='username' name="username" placeholder="GitHub ID" size="20" required
+                    style="margin-bottom: 10px; margin-left: 10px;"> 
+        </div>
+        
+
+        <!-- Password input field with added margin for spacing -->
+        <div class="form-group mb-2 mr-sm-2">
+                <input type="password" id="password" name="password" placeholder="Password" size="20" required
+                        style="margin-bottom: 10px; margin-left: 10px;"> 
+        </div>
+
+        <!-- Error message section displayed when login fails, conditional rendering based on the 'error' param -->
+        <label for="f" th:if="${param.error}" class="text-warning" style="margin-bottom: 10px; margin-left: 10px;">
+            Invalid username and password.
+        </label> <br th:if="${param.error}">
+
+        <!-- Submit button for the form, with added margin for spacing -->
+        <button class="btn btn-secondary" type="submit" style="margin-left: 10px;">
+            Submit
+        </button>
+    </form>
+    <div style="margin-top: 10px;">
+        <!-- Link to the signup page for users who don't have an account, with added left margin -->
+        <a th:href="@{/mvc/person/create}" style="margin-left: 10px;">Sign Up</a>
+
+        <!-- Link to the signup page for users who don't have an account, with added left margin -->
+        <a th:href="@{/mvc/person/reset}" style="margin-left: 10px;">Forgot Password?</a>
+    </div>
+
+</th:block>
+<!-- End of the body fragment -->
+
+<th:block layout:fragment="script">
+    <script>
+        const form = document.querySelector("form");
+        form.addEventListener("submit", (event) => {
+            event.submitter.innerHTML = "<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>";
+        })
+    </script>
+</th:block>
+
+</html>

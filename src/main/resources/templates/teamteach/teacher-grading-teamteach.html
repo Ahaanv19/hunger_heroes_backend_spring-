@@ -1,0 +1,322 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        .container-page {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .btn-delete,
+        .btn-grade,
+        .toggle-active {
+            background-color: #007bff;
+        }
+
+        .btn-view-submissions {
+            background-color: #17a2b8;
+        }
+
+        .toggle-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .toggle-btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: #f2f2f2;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgb(12, 10, 10);
+        }
+
+        tr:nth-child(even) {
+            background-color: rgb(30, 25, 25);
+        }
+
+        .student-row {
+            cursor: pointer;
+        }
+
+        .student-row:hover {
+            background-color: #f1f1f1;
+        }
+
+        #submissionsModal,
+        #addAssignmentModal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: black;
+        }
+
+        #assignmentView,
+        #studentView {}
+
+        #commentarea {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .timer {
+            font-size: 48px;
+            margin: 20px;
+        }
+
+        button {
+            font-size: 16px;
+            margin: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        input {
+            font-size: 16px;
+            padding: 5px;
+            width: 100px;
+            text-align: center;
+        }
+    </style>
+</th:block>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">Teacher toolkit for Team Teach</th:block>
+
+<!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+<th:block layout:fragment="body" th:remove="tag">
+    <div class="container-page">
+        <!-- Assignment View -->
+        <div id="assignmentView">
+
+            <h1>Assignment Teacher Grading Team Teach</h1>
+            <form onChange="selectTeamTeachAssignments(event)">
+
+                    <label for="cars">Choose a topic:</label>
+                    <select id="topics">
+                        <option value="" disabled selected>-- Choose --</option>
+                    </select><br><br>
+                </form>
+
+                <table id="gradingTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gradingList">
+                    </tbody>
+                </table>
+                <div id="commentarea">
+                    <textarea name="name" id="comment" rows="4" cols="100">Add Comment</textarea>
+                </div>
+                <button class="btn" onclick="submitComment()">submit Comment</button>
+        </div>
+    </div>
+    <script>
+        var data;
+        var selectedTopic;
+        // Default to Assignment View 
+        document.addEventListener('DOMContentLoaded', () => {
+
+            fetchTeamTeachAssignments();
+        });
+
+        /**
+        * On loading of the page fetch all assginments and filter by teamteach;
+        */
+        function fetchTeamTeachAssignments() {
+            fectchtopics();
+        };
+
+        function getItemById(list, id) {
+            return list.find(item => item.id == id);
+        }
+
+
+        function fectchtopics() {
+            fetch('/api/assignments/')
+
+                .then(response => response.json())
+                .then(grades => {
+                    data = grades;
+                    const selecttopics = document.getElementById('topics');
+
+
+
+                    grades.forEach(teamteach => {
+                        if (teamteach.type.includes("teamteach")) {
+                            const option = document.createElement('option');
+                            option.value = teamteach.id
+                            option.text = teamteach.name
+                            selecttopics.appendChild(option);
+                        }
+                    });
+                });
+        }
+
+        /**
+        * Once Select Assginments get all the AssignmentSubmissions to get all the student names
+        */
+        function selectTeamTeachAssignments(event) {
+            var selectElement = event.target;
+            var value = selectElement.value;
+            selectedTopic = value;
+            //Clear table
+            const tableBody = document.getElementById('gradingList');
+            tableBody.innerHTML = '';
+            var submissions;
+            var url = "/api/submissions/assignment/" + selectedTopic;
+            fetch(url)
+                .then(response => response.json())
+                .then(grades => {
+                    submissions = grades;
+                    submissions.forEach(submission => {
+                        var student = submission.submitter;
+                            var studentName = student.name;
+                            var submissionId = submission.id;
+                            const row = document.createElement('tr');
+                            row.id = submissionId;
+                            row.innerHTML = `
+                                <td id="name-studentName">${studentName}</td>
+                                <td><input type=text" id="input-${submissionId}"></td>
+                            `;
+                            tableBody.appendChild(row);
+                    });
+                });
+            }
+
+        /**
+        * On submit comment get all the Assignmentsubmissions and iterate through 
+        * and save AssignmentSubmission with grade and feedback.
+        */
+        async function submitComment() {
+            const commentText = document.getElementById('comment').value.trim(); // Get comment text
+
+            if (!commentText) {
+                alert("Comment cannot be empty!");
+                return;
+            }
+            const table = document.getElementById('gradingTable');
+
+            for (let i = 0; i < table.rows.length; i++) {
+                if (i == 0) {
+                    continue;
+                }
+                const row = table.rows[i];
+                var student = row.id;
+                const input = document.getElementById("input-" + student);
+                var grade = input.value;
+                
+                await delay(1000); // 1 second delay between each step help with SQL Lock
+                saveGradeforStudent(student, grade, commentText)
+
+                await delay(1000); // 1 second delay between each step help with SQL Lock
+            }
+        }
+
+
+        /**
+        * Save the AssignmentSubmission with grade and feedback;
+        */
+        async function saveGradeforStudent(submission, grade, feedback) {
+            const postURL = "/api/submissions/grade/" + submission // Endpoint
+
+            const params = new URLSearchParams({
+                grade, feedback
+            });
+
+            // Fetch API options
+            const fetchOptions = {
+                method: 'POST',
+                body: params
+            };
+
+            await fetch(postURL, fetchOptions)
+                .then(response => {
+                    if (response.status === 200) {
+                        alert("success");
+                        return response;
+                    } else {
+                        alert("Response not 200");
+                        throw new Error("Failed to submit comment: " + response.status);
+                    }
+                })
+
+        }
+
+
+        /**
+        * Add a delay due to SQL Lock in the backend.
+        */
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+    </script>
+</th:block>
+
+</html>

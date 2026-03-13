@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="title" th:remove="tag">Titanic Analysis</th:block>
+
+<th:block layout:fragment="body" th:remove="tag">
+  <div class="container">
+    <h2>Titanic Data Analysis</h2>
+    <a href="/titanic" class="btn btn-secondary mb-3">← Back to Dashboard</a>
+    <div class="card mb-4">
+      <div class="card-header bg-info text-white">
+        <h4>ALONE COUNTS</h4>
+      </div>
+      <div class="card-body">
+        <div id="plot-container" style="width:100%; height:400px;"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header bg-light">
+        <h4>Statistical Analysis</h4>
+      </div>
+      <div class="card-body">
+        <div class="row mt-4">  <div class="col-md-6">    <h5>Traveling Status Statistics</h5>    <table class="table table-bordered">      <thead><tr><th>Status</th><th>Survived</th><th>Perished</th><th>Survival Rate</th></tr></thead>      <tbody>        <tr><td>Traveling Alone</td><td>163</td><td>374</td><td>30.4%</td></tr>        <tr><td>With Family</td><td>179</td><td>175</td><td>50.6%</td></tr>      </tbody>    </table>  </div>  <div class="col-md-6">    <h5>Key Finding</h5>    <p>Passengers traveling with family had a 50.6% survival rate compared to 30.4% for those traveling alone.</p>    <p>This suggests that families may have been kept together during evacuation, or that they helped each other survive.</p>  </div></div>
+      </div>
+    </div>
+  </div>
+</th:block>
+
+<th:block layout:fragment="script" th:remove="tag">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const trace = {
+        x: ['Traveling Alone', 'With Family'],
+        y: [537, 354],
+        type: 'bar',
+        marker: {
+          color: 'rgba(46, 204, 113, 0.7)',
+          line: {
+            color: 'rgba(46, 204, 113, 1.0)',
+            width: 1
+          }
+        }
+      };
+
+      const layout = {
+        title: 'COUNT BY ALONE COUNTS',
+        xaxis: {
+          title: 'Traveling Status'
+        },
+        yaxis: {
+          title: 'Number of Passengers'
+        }
+      };
+
+      Plotly.newPlot('plot-container', [trace], layout);
+    });
+  </script>
+</th:block>
+</html>

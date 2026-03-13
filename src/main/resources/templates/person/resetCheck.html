@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag"></th:block>
+
+<head>
+    <script>
+        function validation(event) {
+            event.preventDefault();
+
+            var body = {
+                uid: document.getElementById("uid").value,
+                code: document.getElementById("code").value,
+            }
+            fetch("/mvc/person/reset/check", {
+                method: "POST",
+                body: JSON.stringify(body),
+                cache: "no-cache",
+                headers: new Headers({
+                    "content-type": "application/json"
+                })
+            }).then(function (response) {
+                const message = document.getElementById("message");
+                if (response.status !== 200) {
+                    message.style.color = "red";
+                    message.innerText = "Did not successfully reset password. Double check that you inputted the correct code and uid.";
+                    message.style.display = "block";
+                }
+                else {
+                    message.style.color = "green";
+                    message.innerText = "Successfully reset password. Your password is the database default password. Please login into your account and change it.";
+                    message.style.display = "block";
+                }
+            })
+            return;
+
+        }
+    </script>
+</head>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">Reset Password</th:block>
+
+<!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+<th:block layout:fragment="body" th:remove="tag">
+    <!-- Heading for the login section, with added left margin for spacing -->
+    <h3 style="margin-left: 10px;">Reset Password</h3>
+    <label>Input the uid and the password-reset code emailed to the associated account.</label>
+    <label>Each code will expire after 5 minutes.</label>
+    <table>
+        <!-- Form for resetting password. Uses POST method to submit the data to the /mvc/person/reset/check endpoint -->
+        <tr>
+            <td><input type="text" id='uid' name="uid" placeholder="GitHub ID" size="20" required
+                    style="margin-bottom: 10px; margin-left: 10px;"></td>
+        </tr>
+        <tr>
+            <td><input type="text" id='code' name="code" placeholder="Code" size="6" required
+                    style="margin-bottom: 10px; margin-left: 10px;"></td>
+        </tr>
+        <!-- Submit button for the form, with added margin for spacing -->
+        <tr>
+            <th><input type="button" value="submit" onclick="validation(event)" style="margin-left: 10px;"
+                    class="btn btn-secondary"></th>
+        </tr>
+    </table>
+    <table>
+        <!-- Link to the signup page for users who don't have an account, with added left margin -->
+        <tr>
+            <td><a th:href="@{/mvc/person/reset}" style="margin-left: 10px;">Go back</a></td>
+        </tr>
+
+    </table>
+    <table>
+        <!-- Link to the signup page for users who don't have an account, with added left margin -->
+        <tr>
+            <td><a th:href="@{/login}" style="margin-left: 10px;">Login Page</a></td>
+        </tr>
+
+    </table>
+    <label id="message" style="display: none;"></label>
+
+</th:block>
+<!-- End of the body fragment -->
+
+</html>

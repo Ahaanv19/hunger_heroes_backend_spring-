@@ -1,0 +1,130 @@
+<!DOCTYPE HTML>
+<!-- Signals to the Layout Dialect which layout should be used to decorate this View -->
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        /* Ensures the images in the cards are responsive and maintain their aspect ratio */
+        .card-img-top {
+            width: 100%;
+            /* Makes the image fill the width of the container */
+            height: auto;
+            /* Maintains the aspect ratio of the image */
+            object-fit: cover;
+            /* Ensures the image covers the container without stretching */
+        }
+
+        /* Aligns and spaces the cards within a flex container */
+        .card-deck {
+            display: flex;
+            justify-content: center;
+            /* Centers the cards horizontally */
+            gap: 20px;
+            /* Adds space between the cards */
+        }
+
+        /* Ensures the center card takes up available space and is positioned in the center */
+        .center-card {
+            order: 0;
+            /* Ensures the Java card appears in the center */
+            flex: 1;
+            /* Makes this card take up available space */
+        }
+
+        /* Styles the other two cards (Spring and POJO) in a vertical stack */
+        .other-cards {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+    </style>
+</th:block>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">Spring 2025</th:block>
+
+<!-- define removable layout to change default header-->
+<th:block layout:fragment="removable-header" th:remove="tag"></th:block>
+
+<!-- define removable layout to change default body-->
+<th:block layout:fragment="removable-body" th:remove="tag"><!-- Start of body content specific to the page -->
+    <div class="px-5 py-5 mx-auto">
+        <h1><strong>Java Home Page</strong></h1>
+        <div class="card-deck">
+            <!-- Left Column: Spring -->
+            <div class="col-4 other-cards">
+                <div class="card text-light bg-primary">
+                    <img class="card-img-top" th:src="@{/images/spring.png}" alt="Spring Development" height="250">
+                    <div class="card-body">
+                        <h5 class="card-title">What is Spring?</h5>
+                        <p class="card-text">
+                        <ol>
+                            <li>Spring Framework is the most popular application development framework in Java.</li>
+                            <li>Spring Boot helps to create stand-alone applications with minimal configuration.</li>
+                            <li>Spring MVC is a web framework based on the Model-View-Controller pattern under the
+                                Spring framework.</li>
+                            <li>ThymeLeaf is a server-side Java template engine that supports HTML5 JVM web development
+                                and integrates with Spring Framework.</li>
+                        </ol>
+                        </p>
+                        <a href="https://spring.io/guides/tutorials/rest" class="btn btn-secondary">Spring + Restful</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Column: Java (Main focus) -->
+            <div class="col-4 center-card">
+                <div class="card text-light bg-primary">
+                    <img class="card-img-top" th:src="@{/images/java.png}" alt="Java Development" height="250">
+                    <div class="card-body">
+                        <h5 class="card-title">What should Java Developers learn?</h5>
+                        <p class="card-text">
+                        <ol>
+                            <li>Java 11-17 is used for PBL. Java 8 is often the College Board standard. Features like
+                                Reactive Streams, HTTP2 client, JShell, and React JS are more recent than Java 8.</li>
+                            <li>GitHub: Learning to manage code changes, branches, pull requests, and more is crucial.
+                            </li>
+                            <li>DevOps in development: Java developers should be familiar with managing environments and
+                                automation tools like Git, Maven, and Docker.</li>
+                            <li>REST and Microservices with Spring: Learn how to create and consume RESTful APIs
+                                effectively.</li>
+                        </ol>
+                        </p>
+                        <a href="https://docs.github.com/en/rest/using-the-rest-api/getting-started-with-the-rest-api?apiVersion=2022-11-28"
+                            class="btn btn-secondary">How to: RESTful API</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: POJO -->
+            <div class="col-4 other-cards">
+                <div class="card text-light bg-primary">
+                    <img class="card-img-top" th:src="@{/images/pojo.png}" alt="Java Persistence" height="250">
+                    <div class="card-body">
+                        <h5 class="card-title">How do you create Persistent data?</h5>
+                        <p class="card-text">
+                        <ol>
+                            <li>The Java Persistence API (JPA) provides a query language for CRUD operations on objects
+                                in a database.</li>
+                            <li>Beans, Controller Code, and Business Logic interact with JPA to manage data flow to and
+                                from the database.</li>
+                            <li>Object-Relational Mapping (ORM) maps Java classes (entities) to a relational database
+                                structure.</li>
+                            <li>Plain Old Java Objects (POJO) are the basic building blocks of JPA and ORM. These
+                                classes are typically annotated with @Entity to mark them as persistent data classes.
+                            </li>
+                        </ol>
+                        </p>
+                        <a href="https://docs.spring.io/spring-data/jpa/docs/current-SNAPSHOT/reference/html/#reference"
+                            class="btn btn-secondary">Spring + JPA</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of body content specific to the page -->
+</th:block>
+
+</html>

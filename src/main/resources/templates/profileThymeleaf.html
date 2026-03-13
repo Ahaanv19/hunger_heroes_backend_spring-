@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag"></th:block>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">Profile Thymeleaf</th:block>
+
+<!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+<th:block layout:fragment="body" th:remove="tag">
+    <h2>Fibonacci Calculator</h2>
+    <label for="number">Enter a number (n):</label>
+    <input type="number" id="number" min="0">
+    <button onclick="fetchFibonacci()">Calculate</button>
+
+    <h3>Result:</h3>
+    <p id="result"></p>
+</th:block>
+
+<th:block layout:fragment="script" th:remove="tag">
+    <script>
+        async function fetchFibonacci() {
+            const n = document.getElementById("number").value;
+            if (n === "") {
+                alert("Please enter a number.");
+                return;
+            }
+
+            try {
+                const response = await fetch("/profileThymeleaf/fibonacci", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ n: parseInt(n) })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch Fibonacci number.");
+                }
+
+                const data = await response.json();
+                document.getElementById("result").textContent = `Fibonacci(${data.n}) = ${data.fibResult}`;
+            } catch (error) {
+                document.getElementById("result").textContent = "Error: " + error.message;
+            }
+        }
+    </script>
+</th:block>
+
+</html>

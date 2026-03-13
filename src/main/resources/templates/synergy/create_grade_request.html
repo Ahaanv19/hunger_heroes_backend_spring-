@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag"></th:block>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">Create Grade Request</th:block>
+
+<!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+<th:block layout:fragment="body" th:remove="tag">
+
+    <h2>Create a Grade Request</h2>
+
+    <form id="request-form">
+        <label for="student">Select Student:</label>
+        <select name="studentId" id="student">
+            <option th:each="student : ${students}" th:value="${student.id}" th:text="${student.name}">Student Name
+            </option>
+        </select>
+
+        <br>
+
+        <label for="assignment">Select Assignment:</label>
+        <select name="assignmentId" id="assignment">
+            <option th:each="assignment : ${assignments}" th:value="${assignment.id}" th:text="${assignment.name}">
+                Assignment Name</option>
+        </select>
+
+        <br>
+
+        <label for="gradeSuggestion">Suggested Grade:</label>
+        <input type="number" name="gradeSuggestion" id="gradeSuggestion" step="0.01" required />
+
+        <br>
+
+        <label for="explanation">Explanation:</label>
+        <textarea name="explanation" id="explanation" placeholder="Explain why this student should receive this grade."
+            required style="width: 40%;"></textarea>
+
+        <br>
+
+        <button class="save-btn" type="submit">Save Grade Request</button>
+    </form>
+
+</th:block>
+
+<th:block layout:fragment="script" th:remove="tag">
+    <script>
+        document.getElementById('request-form').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const body = {
+                studentId: document.getElementById('student').value,
+                assignmentId: document.getElementById('assignment').value,
+                gradeSuggestion: document.getElementById('gradeSuggestion').value,
+                explanation: document.getElementById('explanation').value
+            };
+
+            try {
+                const response = await fetch('/api/synergy/grades/requests', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                if (response.ok) {
+                    alert('Grade request saved successfully!');
+                    location.reload();
+                } else {
+                    alert('Failed to save grade request.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while saving the grade request.');
+            }
+        });
+    </script>
+</th:block>
+
+</html>

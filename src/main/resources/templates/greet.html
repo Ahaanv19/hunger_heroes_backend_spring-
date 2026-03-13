@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<!-- page style -->
+<th:block layout:fragment="style" th:remove="tag"></th:block>
+
+<!-- page title -->
+<th:block layout:fragment="title" th:remove="tag">Greeting Page</th:block>
+
+
+<!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
+<th:block layout:fragment="body" th:remove="tag">
+    <!-- Page specific body additions -->
+    <div class="contact" style="height: 35vh;">
+        <div class="row justify-content-left" style="margin: 2%;">
+            <form th:action="@{/greet}" method="GET" id="greetForm">
+                <div>
+                    <label for="greetField">Type a greeting name?</label>
+                    <input name="name" id="greetField">
+                    <button>Greetings!</button>
+                    <p id="greetMessage" th:text="'Greetings, ' + ${name} + '!'"></p>
+                </div>
+            </form>
+        </div>
+    </div>
+</th:block>
+
+</html>

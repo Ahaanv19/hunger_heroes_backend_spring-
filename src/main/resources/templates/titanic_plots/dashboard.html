@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="title" th:remove="tag" th:text="${title}">Titanic Analysis Dashboard</th:block>
+
+<th:block layout:fragment="body" th:remove="tag">
+  <div class="container py-4">
+    <header class="pb-3 mb-4 border-bottom">
+      <h1 class="fs-4" th:text="${title}">Titanic Analysis Dashboard</h1>
+      <p class="lead" th:text="${description}">Interactive data analysis of the Titanic dataset</p>
+    </header>
+
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      <div class="col" th:each="chart : ${charts}">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title" th:text="${chart[0]}">Chart Title</h5>
+            <p class="card-text" th:text="${chart[2]}">Chart description goes here.</p>
+          </div>
+          <div class="card-footer">
+            <a th:href="${chart[1]}" class="btn btn-primary">View Analysis</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-5">
+      <h2>About the Titanic Dataset</h2>
+      <p>
+        The Titanic dataset contains information about the passengers aboard the RMS Titanic, which 
+        sank after colliding with an iceberg on April 15, 1912. It includes details such as passenger 
+        class, age, gender, fare paid, and most importantly, whether they survived the disaster.
+      </p>
+      <p>
+        This dashboard presents various analyses of the data, showing how factors like gender, age, 
+        fare, and traveling companions correlated with survival rates.
+      </p>
+    </div>
+  </div>
+</th:block>
+</html>
