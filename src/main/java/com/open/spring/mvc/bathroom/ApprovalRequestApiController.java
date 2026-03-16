@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.open.spring.mvc.person.Person;
 import com.open.spring.mvc.person.PersonJpaRepository;
 
-@CrossOrigin(origins = {"http://localhost:8585", "https://pages.opencodingsociety.com"})
+@CrossOrigin(origins = {"http://localhost:8286", "https://pages.opencodingsociety.com"})
 @RestController
 @RequestMapping("/api/approval")
 public class ApprovalRequestApiController {    

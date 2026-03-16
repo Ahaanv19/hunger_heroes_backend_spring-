@@ -76,7 +76,7 @@ public class ImportsController {
     @Value("${backup.base.path:./backups}")
     private String backupBasePath;
 
-    @Value("${server.port:8585}")
+    @Value("${server.port:8286}")
     private String serverPort;
 
     private static final DateTimeFormatter TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");

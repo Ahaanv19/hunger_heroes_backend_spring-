@@ -1,8 +1,8 @@
 server {
-    server_name spring.opencodingsociety.com;
+    server_name hungerherosspring.opencodingsociety.com;
     # General API Proxy
     location / {
-        proxy_pass http://localhost:8585;
+        proxy_pass http://localhost:8286;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -15,7 +15,7 @@ server {
         if ($http_origin ~* "^https://(.*\.)?opencodingsociety\.com$") {
             set $cors_origin $http_origin;
         }
-        if ($http_origin = "https://open-coding-society.github.io") {
+        if ($http_origin = "https://ahaanv19.github.io") {
             set $cors_origin $http_origin;
         }
         

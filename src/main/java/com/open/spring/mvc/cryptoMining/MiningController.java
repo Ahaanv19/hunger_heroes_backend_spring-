@@ -43,7 +43,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/mining")
 @Transactional
-@CrossOrigin(origins = {"http://localhost:8585", "http://localhost:4500", "http://127.0.0.1:4500"})
+@CrossOrigin(origins = {"http://localhost:8286", "http://localhost:4500", "http://127.0.0.1:4500"})
 public class MiningController {
     @Autowired
     private PersonJpaRepository personRepository;

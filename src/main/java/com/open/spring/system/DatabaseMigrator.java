@@ -451,7 +451,7 @@ public class DatabaseMigrator {
         while (counter < maxWait) {
             try {
                 // Check if port is open
-                ProcessBuilder checkPort = new ProcessBuilder("lsof", "-Pi", ":8585", "-sTCP:LISTEN", "-t");
+                ProcessBuilder checkPort = new ProcessBuilder("lsof", "-Pi", ":8286", "-sTCP:LISTEN", "-t");
                 Process portCheck = checkPort.start();
                 portCheck.waitFor();
                 

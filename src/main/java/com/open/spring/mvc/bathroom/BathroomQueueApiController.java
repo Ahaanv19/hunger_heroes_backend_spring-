@@ -30,7 +30,7 @@ import lombok.Getter;
  */
 @RestController
 @RequestMapping("/api/queue") // Base URL for all endpoints in this controller
-@CrossOrigin(origins = {"http://localhost:8585", "https://pages.opencodingsociety.com/"})
+@CrossOrigin(origins = {"http://localhost:8286", "https://pages.opencodingsociety.com/"})
 public class BathroomQueueApiController {
 
     /**
@@ -67,7 +67,7 @@ public class BathroomQueueApiController {
      * @return A ResponseEntity containing a success message if the queue is created,
      *         or a CONFLICT status if queue already exists, or INTERNAL_SERVER_ERROR if creation fails
      */
-    @CrossOrigin(origins = {"http://localhost:8585", "https://pages.opencodingsociety.com"})
+    @CrossOrigin(origins = {"http://localhost:8286", "https://pages.opencodingsociety.com"})
     @PostMapping("/addQueue")
     public ResponseEntity<String> addQueue(@RequestBody QueueAddReq request) {
         System.out.println(request);
@@ -95,7 +95,7 @@ public class BathroomQueueApiController {
      * @return A ResponseEntity containing a success message with student and teacher information,
      *         or a CREATED status if operation is successful
      */
-    @CrossOrigin(origins = {"http://localhost:8585", "https://pages.opencodingsociety.com"})
+    @CrossOrigin(origins = {"http://localhost:8286", "https://pages.opencodingsociety.com"})
     @PostMapping("/add")
     public ResponseEntity<Object> addToQueue(@RequestBody QueueDto queueDto) {
         // Check if a queue already exists for the given teacher
@@ -119,7 +119,7 @@ public class BathroomQueueApiController {
      * @return A ResponseEntity containing a success message if student is removed,
      *         or a NOT_FOUND status if queue or student is not found
      */
-    @CrossOrigin(origins = {"http://localhost:8585", "https://pages.opencodingsociety.com"})
+    @CrossOrigin(origins = {"http://localhost:8286", "https://pages.opencodingsociety.com"})
     @PostMapping("/remove")
     public ResponseEntity<Object> removeFromQueue(@RequestBody QueueDto queueDto) {
         Optional<BathroomQueue> queueEntry = repository.findByTeacherEmail(queueDto.getTeacherEmail());
@@ -146,7 +146,7 @@ public class BathroomQueueApiController {
      * @param teacher The teacher's email whose queue's front student should be removed
      * @return void - This method does not return a ResponseEntity (consider adding one for better API design)
      */
-    @CrossOrigin(origins = {"http://localhost:8585", "https://pages.opencodingsociety.com"})
+    @CrossOrigin(origins = {"http://localhost:8286", "https://pages.opencodingsociety.com"})
     @PostMapping("/removefront/{teacher}")
     public void removeFront(@PathVariable String teacher) {
         Optional<BathroomQueue> queueEntry = repository.findByTeacherEmail(teacher);
@@ -164,7 +164,7 @@ public class BathroomQueueApiController {
      * @return A ResponseEntity containing a success message if student is approved,
      *         BAD_REQUEST if student is not at front of queue, or NOT_FOUND if queue doesn't exist
      */
-    @CrossOrigin(origins = {"http://localhost:8585", "https://pages.opencodingsociety.com"})
+    @CrossOrigin(origins = {"http://localhost:8286", "https://pages.opencodingsociety.com"})
     @PostMapping("/approve")
     public ResponseEntity<Object> approveStudent(@RequestBody QueueDto queueDto) {
         Optional<BathroomQueue> queueEntry = repository.findByTeacherEmail(queueDto.getTeacherEmail());
@@ -184,7 +184,7 @@ public class BathroomQueueApiController {
         return new ResponseEntity<>("Queue for " + queueDto.getTeacherEmail() + " not found", HttpStatus.NOT_FOUND);
     }
 
-    @CrossOrigin(origins = {"http://localhost:8585", "https://pages.opencodingsociety.com"})
+    @CrossOrigin(origins = {"http://localhost:8286", "https://pages.opencodingsociety.com"})
     @PostMapping("/removeFront")
     public ResponseEntity<Object> removeFrontStudent(@RequestBody QueueDto queueDto) {
         Optional<BathroomQueue> queueEntry = repository.findByTeacherEmail(queueDto.getTeacherEmail());
@@ -256,7 +256,7 @@ public class BathroomQueueApiController {
      * 
      * @return A ResponseEntity containing a list of all BathroomQueue entities
      */
-    @CrossOrigin(origins = {"http://localhost:8585", "https://pages.opencodingsociety.com"})
+    @CrossOrigin(origins = {"http://localhost:8286", "https://pages.opencodingsociety.com"})
     @GetMapping("/getActive")
     public ResponseEntity<Object> getActiveQueues() {
         return new ResponseEntity<>(repository.findAll(), HttpStatus.OK);

@@ -87,7 +87,7 @@ public class StudentQueueApiController {
         return new ResponseEntity<>(repository.findAll(), HttpStatus.OK);
     }
    
-    @CrossOrigin(origins = "http://localhost:8585")
+    @CrossOrigin(origins = "http://localhost:8286")
     @GetMapping("/getActive")
     public ResponseEntity<Object> getActiveQueues() {
         return new ResponseEntity<>(repository.findAll(), HttpStatus.OK);

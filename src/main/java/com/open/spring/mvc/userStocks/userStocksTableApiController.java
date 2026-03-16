@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap; // use this instead of HashMap if
 /**
  * Controller class for handling the user stock-related API endpoints.
  */
-// http://127.0.0.1:8585/stocks/table/addStock
+// http://127.0.0.1:8286/stocks/table/addStock
 @Controller
 @RequestMapping("/stocks/table")
 public class userStocksTableApiController {
