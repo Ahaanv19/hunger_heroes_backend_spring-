@@ -26,7 +26,7 @@
     integrity="sha384-MD0va0y3Bm+8L7HRwQWups6Tp3t09vaPmoiCXr0ryaSG71f54HUHY0Z4H5eklygp" crossorigin="anonymous">
 
     <!-- Project CSS -->
-    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/style.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/style.css?v=3}">
 
     <th:block layout:fragment="style" th:remove="tag"></th:block>
 </head>
@@ -50,11 +50,11 @@
     <!-- define block for optional layout removal-->
     <th:block layout:fragment="removable-body" th:remove="tag">
 
-        <!-- Body Section -->
-        <div class="container py-4 text-light bg-primary rounded" info="content">
-            <div class="container bg-secondary py-4 rounded">
+        <!-- Body Section - Hunger Heroes styled -->
+        <div class="container py-4" info="content" style="background-color: var(--hh-card-bg); border: 1px solid var(--hh-card-border); border-radius: 12px;">
+            <div class="container py-4 rounded" style="background-color: var(--bs-dark);">
                 <div class="row justify-content-md-center"></div>
-                <div class="p-5 mb-4 bg-success text-light rounded-3">
+                <div class="p-5 mb-4 rounded-3" style="background-color: var(--bs-primary); border: 1px solid var(--hh-card-border);">
                     <th:block layout:fragment="body" th:remove="tag">Body details are added by ThymeLeaf layout consumer</th:block>
                 </div>
             </div>

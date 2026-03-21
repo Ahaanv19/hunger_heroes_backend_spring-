@@ -48,63 +48,71 @@ $theme-colors: (
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  */
  :root {
-  --bs-blue: #5865F2; /* Discord Blue */
-  --bs-indigo: #7289DA; /* A lighter blue, close to Discord's blue */
-  --bs-purple: #9B59B6; /* Purple accent */
-  --bs-pink: #FF69B4; /* Discord's pink is more muted */
-  --bs-red: #E74C3C; /* Red used in Discord warnings */
-  --bs-orange: #FFA500; /* Discord doesn't use orange often, this is a guess */
-  --bs-yellow: #FFEB3B; /* Discord yellow is quite soft */
-  --bs-green: #2ECC71; /* Green used in Discord */
-  --bs-teal: #1ABC9C; /* Teal for Discord */
-  --bs-cyan: #00BCD4; /* Close to Discord's cyan tone */
-  --bs-white: #FFFFFF; /* White for text contrast */
-  --bs-gray: #B9BBBE; /* Light gray */
-  --bs-gray-dark: #2F3136; /* Darker gray used in background */
-  --bs-gray-100: #99AAB5; /* Light gray (used in some UI areas) */
-  --bs-gray-200: #72767D; /* Slightly darker gray */
-  --bs-gray-300: #99AAB5; /* Light gray for UI elements */
-  --bs-gray-400: #7F8C8D; /* Slightly darker gray for borders */
-  --bs-gray-500: #546E7A; /* Mid gray for buttons */
-  --bs-gray-600: #4A5568; /* Gray for text and UI */
-  --bs-gray-700: #2C3E50; /* Darker gray for dark UI */
-  --bs-gray-800: #23272A; /* Dark gray for backgrounds */
-  --bs-gray-900: #1C1F22; /* Very dark gray for deep background */
-  --bs-primary: #181818; /* Set primary to the background color */
-  --bs-secondary: #181818; /* Set secondary to the background color */
-  --bs-navbar: #5865F2; /* Primary color is now the navbar color */
-  --bs-success: #28A745; /* Discord's success color (green) */
-  --bs-info: #00BCD4; /* Cyan as info color */
-  --bs-warning: #FFEB3B; /* Soft yellow for warning */
-  --bs-danger: #E74C3C; /* Red for danger */
-  --bs-light: #2F3136; /* Dark background for light sections */
-  --bs-dark: #23272A; /* Dark background */
+  /* Hunger Heroes Blue & White Theme */
+  --bs-blue: #1976D2; /* Primary Blue */
+  --bs-indigo: #3949AB; /* Indigo accent */
+  --bs-purple: #5E35B1; /* Purple accent */
+  --bs-pink: #E91E63; /* Pink accent */
+  --bs-red: #D32F2F; /* Warning Red */
+  --bs-orange: #F57C00; /* Orange accent */
+  --bs-yellow: #FBC02D; /* Yellow warning */
+  --bs-green: #388E3C; /* Success green */
+  --bs-teal: #00897B; /* Teal accent */
+  --bs-cyan: #0097A7; /* Cyan info */
+  --bs-white: #FFFFFF; /* White */
+  --bs-gray: #78909C; /* Blue-gray */
+  --bs-gray-dark: #37474F; /* Dark blue-gray */
+  --bs-gray-100: #F5F7FA; /* Lightest gray */
+  --bs-gray-200: #ECEFF1; /* Very light gray */
+  --bs-gray-300: #CFD8DC; /* Light gray */
+  --bs-gray-400: #90A4AE; /* Medium gray */
+  --bs-gray-500: #607D8B; /* Standard gray */
+  --bs-gray-600: #546E7A; /* Slightly darker gray */
+  --bs-gray-700: #455A64; /* Dark gray */
+  --bs-gray-800: #37474F; /* Very dark gray */
+  --bs-gray-900: #263238; /* Darkest gray */
+  --bs-primary: #1565C0; /* Primary Blue */
+  --bs-secondary: #FFFFFF; /* White for cards */
+  --bs-navbar: #1976D2; /* Navbar blue */
+  --bs-success: #388E3C; /* Success green */
+  --bs-info: #0288D1; /* Info blue */
+  --bs-warning: #FBC02D; /* Yellow warning */
+  --bs-danger: #D32F2F; /* Red danger */
+  --bs-light: #F5F7FA; /* Light background */
+  --bs-dark: #263238; /* Dark text */
   
-  --bs-primary-rgb: 24, 24, 24; /* RGB for primary (background color) */
-  --bs-secondary-rgb: 40, 167, 69; /* RGB for secondary (background color) */
-  --bs-navbar-rgb: 88, 101, 242; /* RGB for navbar color (Discord Blue) */
-  --bs-success-rgb: 40, 40, 40; /* Green in RGB */
-  --bs-info-rgb: 0, 188, 212; /* Cyan in RGB */
-  --bs-warning-rgb: 255, 235, 59; /* Yellow in RGB */
-  --bs-danger-rgb: 231, 76, 60; /* Red in RGB */
-  --bs-light-rgb: 170, 170, 170; /* Light gray background in RGB */
-  --bs-dark-rgb: 35, 39, 42; /* Dark background in RGB */
+  --bs-primary-rgb: 21, 101, 192; /* RGB for primary */
+  --bs-secondary-rgb: 255, 255, 255; /* RGB for secondary */
+  --bs-navbar-rgb: 25, 118, 210; /* RGB for navbar */
+  --bs-success-rgb: 56, 142, 60; /* Green in RGB */
+  --bs-info-rgb: 2, 136, 209; /* Blue in RGB */
+  --bs-warning-rgb: 251, 192, 45; /* Yellow in RGB */
+  --bs-danger-rgb: 211, 47, 47; /* Red in RGB */
+  --bs-light-rgb: 245, 247, 250; /* Light gray RGB */
+  --bs-dark-rgb: 38, 50, 56; /* Dark gray RGB */
   --bs-white-rgb: 255, 255, 255; /* White RGB */
   --bs-black-rgb: 0, 0, 0; /* Black RGB */
-  --bs-body-color-rgb: 33, 37, 41; /* Body color for text */
-  --bs-body-bg-rgb: 18, 18, 18; /* Dark background */
+  --bs-body-color-rgb: 38, 50, 56; /* Body color for text (dark) */
+  --bs-body-bg-rgb: 245, 247, 250; /* Light background */
   
-  --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --bs-font-sans-serif: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   
-  --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.075)); /* Subtle gradient */
+  --bs-gradient: none; /* No gradients - clean and modern */
   
   --bs-body-font-family: var(--bs-font-sans-serif);
   --bs-body-font-size: 1rem;
   --bs-body-font-weight: 400;
   --bs-body-line-height: 1.5;
-  --bs-body-color: #DCDDDE; /* Lighter text color */
-  --bs-body-bg: #181818; /* Dark background */
+  --bs-body-color: #263238; /* Dark text on light background */
+  --bs-body-bg: #F5F7FA; /* Light gray-white background */
+
+  /* Hunger Heroes custom variables */
+  --hh-accent: #1976D2; /* Accent blue */
+  --hh-card-bg: #FFFFFF; /* White card background */
+  --hh-card-border: #E0E0E0; /* Light gray border */
+  --hh-link-color: #1565C0; /* Link blue */
+  --hh-link-hover: #0D47A1; /* Darker blue on hover */
 }
 
 
@@ -20124,6 +20132,189 @@ a > .dark-mode code {
   .dark-mode .d-print-none {
     display: none !important;
   }
+}
+
+/* ========================================
+   HUNGER HEROES CUSTOM STYLES
+   ======================================== */
+
+/* Navbar styling */
+.navbar {
+    border-bottom: 2px solid var(--bs-navbar) !important;
+}
+
+.navbar-brand {
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
+}
+
+.nav-link {
+    color: #C8E6C9 !important;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #A5D6A7 !important;
+}
+
+/* Button styling */
+.btn-success {
+    background-color: var(--bs-navbar) !important;
+    border-color: var(--bs-navbar) !important;
+}
+
+.btn-success:hover {
+    background-color: #388E3C !important;
+    border-color: #388E3C !important;
+}
+
+.btn-outline-success {
+    color: var(--hh-accent) !important;
+    border-color: var(--hh-accent) !important;
+}
+
+.btn-outline-success:hover {
+    background-color: var(--hh-accent) !important;
+    color: #0D1F12 !important;
+}
+
+.btn-outline-light {
+    color: #C8E6C9 !important;
+    border-color: #C8E6C9 !important;
+}
+
+.btn-outline-light:hover {
+    background-color: #C8E6C9 !important;
+    color: #0D1F12 !important;
+}
+
+/* Dropdown styling */
+.dropdown-menu-dark {
+    background-color: var(--hh-card-bg) !important;
+    border: 1px solid var(--hh-card-border) !important;
+}
+
+.dropdown-item {
+    color: var(--bs-body-color) !important;
+}
+
+.dropdown-item:hover {
+    background-color: var(--bs-navbar) !important;
+    color: white !important;
+}
+
+/* Card styling */
+.card {
+    background-color: var(--hh-card-bg) !important;
+    border: 1px solid var(--hh-card-border) !important;
+    border-radius: 12px;
+}
+
+.card-body {
+    color: var(--bs-body-color);
+}
+
+/* Text colors */
+.text-success {
+    color: var(--hh-accent) !important;
+}
+
+.text-primary {
+    color: var(--bs-navbar) !important;
+}
+
+/* Link styling */
+a {
+    color: var(--hh-link-color);
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--hh-link-hover);
+}
+
+/* Table styling for data views */
+.table {
+    color: var(--bs-body-color);
+}
+
+.table thead th {
+    background-color: var(--bs-navbar);
+    color: white;
+    border-color: var(--hh-card-border);
+}
+
+.table tbody tr {
+    background-color: var(--hh-card-bg);
+    border-color: var(--hh-card-border);
+}
+
+.table tbody tr:hover {
+    background-color: var(--bs-light);
+}
+
+/* Form styling */
+.form-control {
+    background-color: var(--hh-card-bg);
+    border-color: var(--hh-card-border);
+    color: var(--bs-body-color);
+}
+
+.form-control:focus {
+    background-color: var(--hh-card-bg);
+    border-color: var(--hh-accent);
+    color: var(--bs-body-color);
+    box-shadow: 0 0 0 0.25rem rgba(102, 187, 106, 0.25);
+}
+
+/* Badge styling for donation statuses */
+.badge-active {
+    background-color: var(--hh-accent) !important;
+    color: #0D1F12 !important;
+}
+
+.badge-accepted {
+    background-color: #1565C0 !important;
+    color: white !important;
+}
+
+.badge-delivered {
+    background-color: #2E7D32 !important;
+    color: white !important;
+}
+
+.badge-cancelled {
+    background-color: #C62828 !important;
+    color: white !important;
+}
+
+.badge-expired {
+    background-color: #5D4037 !important;
+    color: white !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bs-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bs-navbar);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--hh-accent);
+}
+
+/* Selection styling */
+::selection {
+    background-color: var(--bs-navbar);
+    color: white;
 }
 
 /*# sourceMappingURL=custom.css.map */

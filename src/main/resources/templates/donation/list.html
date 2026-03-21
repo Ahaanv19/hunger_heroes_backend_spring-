@@ -1,0 +1,285 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            color: #1565C0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: #546E7A;
+            opacity: 0.9;
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-badge {
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        
+        .stat-badge .number {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1565C0;
+        }
+        
+        .stat-badge .label {
+            color: #546E7A;
+            font-size: 0.85rem;
+        }
+        
+        .donation-card {
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.15s;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        
+        .donation-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .donation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .donation-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .donation-title h3 {
+            color: #263238;
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        
+        .donation-title .category {
+            color: #78909C;
+            font-size: 0.85rem;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active { background-color: #388E3C; color: white; }
+        .status-accepted { background-color: #1565C0; color: white; }
+        .status-delivered { background-color: #2E7D32; color: white; }
+        .status-cancelled { background-color: #C62828; color: white; }
+        .status-expired { background-color: #5D4037; color: white; }
+        
+        .donation-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            color: #455A64;
+        }
+        
+        .detail-item {
+            font-size: 0.9rem;
+        }
+        
+        .detail-item .label {
+            color: #78909C;
+            font-size: 0.8rem;
+        }
+        
+        .filter-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            background-color: #FFFFFF;
+            color: #455A64;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background-color: #1976D2;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #78909C;
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="title" th:remove="tag">Donations - Hunger Heroes</th:block>
+
+<th:block layout:fragment="removable-header" th:remove="tag"></th:block>
+
+<th:block layout:fragment="removable-body" th:remove="tag">
+    <div class="container py-4">
+        <div class="page-header">
+            <h1>Food Donations</h1>
+            <p>Browse all available food donations in the system</p>
+        </div>
+        
+        <!-- Stats Row -->
+        <div class="stats-row" id="statsRow">
+            <div class="stat-badge">
+                <div class="number" id="totalCount">--</div>
+                <div class="label">Total</div>
+            </div>
+            <div class="stat-badge">
+                <div class="number" id="activeCount">--</div>
+                <div class="label">Active</div>
+            </div>
+            <div class="stat-badge">
+                <div class="number" id="acceptedCount">--</div>
+                <div class="label">Accepted</div>
+            </div>
+            <div class="stat-badge">
+                <div class="number" id="deliveredCount">--</div>
+                <div class="label">Delivered</div>
+            </div>
+        </div>
+        
+        <!-- Filter Bar -->
+        <div class="filter-bar">
+            <a href="?status=" class="filter-btn" th:classappend="${param.status == null || param.status.isEmpty()} ? 'active' : ''">All</a>
+            <a href="?status=active" class="filter-btn" th:classappend="${param.status != null && param.status.contains('active')} ? 'active' : ''">Active</a>
+            <a href="?status=accepted" class="filter-btn" th:classappend="${param.status != null && param.status.contains('accepted')} ? 'active' : ''">Accepted</a>
+            <a href="?status=delivered" class="filter-btn" th:classappend="${param.status != null && param.status.contains('delivered')} ? 'active' : ''">Delivered</a>
+        </div>
+        
+        <!-- Donations List -->
+        <div id="donationsList">
+            <div class="empty-state" id="loadingState">
+                <p>Loading donations...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Fetch and render donations
+        async function loadDonations() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const status = urlParams.get('status');
+                
+                let url = '/api/donations';
+                if (status) {
+                    url += '?status=' + status;
+                }
+                
+                const response = await fetch(url);
+                const donations = await response.json();
+                
+                renderDonations(donations);
+                loadStats();
+            } catch (error) {
+                document.getElementById('donationsList').innerHTML = `
+                    <div class="empty-state">
+                        <p>Error loading donations: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function renderDonations(donations) {
+            const container = document.getElementById('donationsList');
+            
+            if (!donations || donations.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No donations found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = donations.map(d => `
+                <div class="donation-card">
+                    <div class="donation-header">
+                        <div class="donation-title">
+                            <div>
+                                <h3>${d.food_name || d.foodName || 'Unknown Item'}</h3>
+                                <span class="category">${d.category || 'other'}</span>
+                            </div>
+                        </div>
+                        <span class="status-badge status-${d.status || 'active'}">${d.status || 'active'}</span>
+                    </div>
+                    <div class="donation-details">
+                        <div class="detail-item">
+                            <div class="label">Quantity</div>
+                            <div>${d.quantity || 1} ${d.unit || 'items'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="label">Expiry Date</div>
+                            <div>${d.expiry_date || d.expiryDate || 'N/A'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="label">Donor ZIP</div>
+                            <div>${d.donor_zip || d.donorZip || 'N/A'}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="label">Storage</div>
+                            <div>${d.storage || 'room_temp'}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/donations/stats');
+                const stats = await response.json();
+                const byStatus = stats.byStatus || {};
+                
+                const total = Object.values(byStatus).reduce((a, b) => a + b, 0);
+                document.getElementById('totalCount').textContent = total;
+                document.getElementById('activeCount').textContent = byStatus.active || 0;
+                document.getElementById('acceptedCount').textContent = byStatus.accepted || 0;
+                document.getElementById('deliveredCount').textContent = byStatus.delivered || 0;
+            } catch (error) {
+                console.log('Stats error:', error);
+            }
+        }
+        
+        // Load on page ready
+        loadDonations();
+    </script>
+</th:block>
+
+</html>

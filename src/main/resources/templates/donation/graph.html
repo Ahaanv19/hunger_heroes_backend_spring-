@@ -1,0 +1,323 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        .graph-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-header h1 {
+            color: #1565C0;
+            font-weight: 600;
+            font-size: 1.75rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .section-header p {
+            color: #546E7A;
+            opacity: 0.9;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .summary-card {
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            padding: 1.25rem;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        
+        .summary-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1565C0;
+        }
+        
+        .summary-card .label {
+            color: #546E7A;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        .influencer-section {
+            margin-top: 2rem;
+        }
+        
+        .influencer-section h2 {
+            color: #1565C0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .influencer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .influencer-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        
+        .influencer-item.rank-1 {
+            border-left: 4px solid #FFD54F;
+            background-color: #FFFDE7;
+        }
+        
+        .influencer-item.rank-2 {
+            border-left: 4px solid #B0BEC5;
+            background-color: #FAFAFA;
+        }
+        
+        .influencer-item.rank-3 {
+            border-left: 4px solid #CD7F32;
+            background-color: #FFF8E1;
+        }
+        
+        .influencer-rank {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            background-color: #1976D2;
+            color: #FFFFFF;
+        }
+        
+        .influencer-item.rank-1 .influencer-rank {
+            background-color: #FFD54F;
+            color: #263238;
+        }
+        
+        .influencer-item.rank-2 .influencer-rank {
+            background-color: #B0BEC5;
+            color: #263238;
+        }
+        
+        .influencer-item.rank-3 .influencer-rank {
+            background-color: #CD7F32;
+            color: #FFFFFF;
+        }
+        
+        .influencer-info {
+            flex: 1;
+            margin-left: 1rem;
+        }
+        
+        .influencer-email {
+            color: #263238;
+            font-weight: 500;
+        }
+        
+        .influencer-score {
+            color: #1565C0;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+        
+        .score-label {
+            color: #78909C;
+            font-size: 0.75rem;
+        }
+        
+        .network-viz {
+            margin-top: 2rem;
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            padding: 2rem;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        
+        .network-viz h3 {
+            color: #1565C0;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .network-nodes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            max-width: 800px;
+        }
+        
+        .node {
+            padding: 0.5rem 0.75rem;
+            background-color: #1976D2;
+            color: #FFFFFF;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: default;
+            transition: transform 0.15s, background-color 0.15s;
+        }
+        
+        .node:hover {
+            background-color: #1565C0;
+            transform: scale(1.05);
+        }
+        
+        .loading {
+            color: #78909C;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #C62828;
+            padding: 1rem;
+            background-color: rgba(198, 40, 40, 0.1);
+            border: 1px solid #C62828;
+            border-radius: 4px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: #1565C0;
+            text-decoration: none;
+        }
+        
+        .back-link:hover {
+            color: #0D47A1;
+            text-decoration: underline;
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="body" th:remove="tag">
+    <div class="graph-container">
+        <div class="section-header">
+            <h1>Donation Network Graph</h1>
+            <p>Community connections and influencer analysis</p>
+        </div>
+        
+        <div id="loading" class="loading">Loading graph analytics...</div>
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <div id="content" style="display: none;">
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="value" id="nodeCount">--</div>
+                    <div class="label">Network Nodes</div>
+                </div>
+                <div class="summary-card">
+                    <div class="value" id="edgeCount">--</div>
+                    <div class="label">Connections</div>
+                </div>
+                <div class="summary-card">
+                    <div class="value" id="communityCount">--</div>
+                    <div class="label">Communities</div>
+                </div>
+                <div class="summary-card">
+                    <div class="value" id="density">--</div>
+                    <div class="label">Network Density</div>
+                </div>
+            </div>
+            
+            <div class="influencer-section">
+                <h2>Top Influencers</h2>
+                <div class="influencer-list" id="influencerList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+            
+            <div class="network-viz">
+                <h3>Network Nodes</h3>
+                <div class="network-nodes" id="networkNodes">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+        
+        <a th:href="@{/mvc/donations}" class="back-link">Back to Donations</a>
+    </div>
+    
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const content = document.getElementById('content');
+            
+            try {
+                const response = await fetch('/api/donations/graph?topN=10');
+                if (!response.ok) throw new Error('Failed to load graph data');
+                const data = await response.json();
+                
+                loading.style.display = 'none';
+                content.style.display = 'block';
+                
+                // Summary
+                const summary = data.summary || {};
+                document.getElementById('nodeCount').textContent = summary.nodeCount || 0;
+                document.getElementById('edgeCount').textContent = summary.edgeCount || 0;
+                document.getElementById('communityCount').textContent = data.communities || 0;
+                
+                const density = summary.edgeCount && summary.nodeCount > 1 
+                    ? ((2 * summary.edgeCount) / (summary.nodeCount * (summary.nodeCount - 1))).toFixed(3)
+                    : '0';
+                document.getElementById('density').textContent = density;
+                
+                // Top Influencers
+                const influencers = data.topInfluencers || [];
+                const influencerList = document.getElementById('influencerList');
+                influencerList.innerHTML = influencers.map((inf, idx) => {
+                    const rankClass = idx < 3 ? `rank-${idx + 1}` : '';
+                    return `
+                        <div class="influencer-item ${rankClass}">
+                            <div class="influencer-rank">${idx + 1}</div>
+                            <div class="influencer-info">
+                                <div class="influencer-email">${inf.email || inf}</div>
+                            </div>
+                            <div>
+                                <div class="influencer-score">${inf.score ?? inf.connections ?? '--'}</div>
+                                <div class="score-label">influence</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('') || '<p style="color: #81C784;">No influencer data available</p>';
+                
+                // Network nodes visualization
+                const nodes = summary.nodes || [];
+                const networkNodes = document.getElementById('networkNodes');
+                networkNodes.innerHTML = nodes.slice(0, 50).map(node => 
+                    `<div class="node">${node}</div>`
+                ).join('') || '<p style="color: #81C784;">No network nodes available</p>';
+                
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = 'Error loading graph data: ' + err.message;
+            }
+        });
+    </script>
+</th:block>
+
+</html>

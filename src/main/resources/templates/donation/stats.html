@@ -1,0 +1,240 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            color: #1565C0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.15s;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #1565C0;
+        }
+        
+        .stat-card .label {
+            color: #546E7A;
+            font-size: 0.9rem;
+        }
+        
+        .section-title {
+            color: #1565C0;
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        
+        .category-card {
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        
+        .category-card .name {
+            color: #455A64;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+        
+        .category-card .count {
+            color: #1565C0;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        
+        .status-bar {
+            display: flex;
+            height: 30px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .status-bar-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            min-width: 50px;
+        }
+        
+        .status-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #455A64;
+            font-size: 0.9rem;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #78909C;
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="title" th:remove="tag">Statistics - Hunger Heroes</th:block>
+
+<th:block layout:fragment="removable-header" th:remove="tag"></th:block>
+
+<th:block layout:fragment="removable-body" th:remove="tag">
+    <div class="container py-4">
+        <div class="page-header">
+            <h1>Donation Statistics</h1>
+            <p>Real-time analytics and insights</p>
+        </div>
+        
+        <div id="statsContent">
+            <div class="loading">
+                <p>Loading statistics...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const statusColors = {
+            'active': '#43A047',
+            'accepted': '#1565C0',
+            'delivered': '#2E7D32',
+            'cancelled': '#C62828',
+            'expired': '#5D4037'
+        };
+        
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/donations/stats');
+                const stats = await response.json();
+                renderStats(stats);
+            } catch (error) {
+                document.getElementById('statsContent').innerHTML = `
+                    <div class="loading">
+                        <p>Error loading statistics: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function renderStats(stats) {
+            const byStatus = stats.byStatus || {};
+            const byCategory = stats.byCategory || {};
+            
+            const total = Object.values(byStatus).reduce((a, b) => a + b, 0);
+            
+            // Build status bar
+            let statusBar = '';
+            let legend = '';
+            for (const [status, count] of Object.entries(byStatus)) {
+                const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                if (pct > 0) {
+                    statusBar += `<div class="status-bar-segment" style="background-color: ${statusColors[status] || '#666'}; width: ${pct}%;">${pct}%</div>`;
+                }
+                legend += `
+                    <div class="legend-item">
+                        <span class="legend-dot" style="background-color: ${statusColors[status] || '#666'};"></span>
+                        ${status}: ${count}
+                    </div>
+                `;
+            }
+            
+            // Build category cards
+            let categoryCards = '';
+            for (const [cat, count] of Object.entries(byCategory)) {
+                categoryCards += `
+                    <div class="category-card">
+                        <div class="count">${count}</div>
+                        <div class="name">${cat.replace('_', ' ')}</div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('statsContent').innerHTML = `
+                <!-- Summary Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number">${total}</div>
+                        <div class="label">Total Donations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">${byStatus.active || 0}</div>
+                        <div class="label">Active</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">${byStatus.accepted || 0}</div>
+                        <div class="label">Accepted</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">${byStatus.delivered || 0}</div>
+                        <div class="label">Delivered</div>
+                    </div>
+                </div>
+                
+                <!-- Status Distribution -->
+                <h3 class="section-title">Status Distribution</h3>
+                ${total > 0 ? `
+                    <div class="status-bar">${statusBar}</div>
+                    <div class="status-legend">${legend}</div>
+                ` : '<p style="color: var(--bs-gray-400);">No data available</p>'}
+                
+                <!-- Categories -->
+                <h3 class="section-title">By Category</h3>
+                ${Object.keys(byCategory).length > 0 ? `
+                    <div class="category-grid">${categoryCards}</div>
+                ` : '<p style="color: var(--bs-gray-400);">No category data available</p>'}
+            `;
+        }
+        
+        loadStats();
+    </script>
+</th:block>
+
+</html>

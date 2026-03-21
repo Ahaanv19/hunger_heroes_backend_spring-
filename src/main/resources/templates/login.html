@@ -3,63 +3,156 @@
     layout:decorate="~{layouts/base}" lang="en">
 
 <!-- page style -->
-<th:block layout:fragment="style" th:remove="tag"></th:block>
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-header h2 {
+            color: #1565C0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-header p {
+            color: #546E7A;
+            opacity: 0.9;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 1rem;
+            background-color: #F5F7FA;
+            border: 1px solid #CFD8DC;
+            border-radius: 4px;
+            color: #263238;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #1976D2;
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+        }
+        
+        .form-input::placeholder {
+            color: #90A4AE;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #1976D2;
+            border: none;
+            border-radius: 4px;
+            color: #FFFFFF;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+        
+        .btn-login:hover {
+            background-color: #1565C0;
+        }
+        
+        .login-links {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #E0E0E0;
+        }
+        
+        .login-links a {
+            color: #1565C0;
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+        
+        .login-links a:hover {
+            color: #0D47A1;
+            text-decoration: underline;
+        }
+        
+        .alert-success {
+            background-color: rgba(56, 142, 60, 0.1);
+            color: #2E7D32;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        
+        .alert-error {
+            background-color: rgba(211, 47, 47, 0.1);
+            color: #C62828;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+    </style>
+</th:block>
 
 <!-- page title -->
-<th:block layout:fragment="title" th:remove="tag">Login</th:block>
+<th:block layout:fragment="title" th:remove="tag">Login - Hunger Heroes</th:block>
 
 <!-- The 'body' section is defined using Thymeleaf's layout fragment. It will replace the 'body' content in the base layout -->
 <th:block layout:fragment="body" th:remove="tag">
-    <!-- Heading for the login section, with added left margin for spacing -->
-    <h3>Login To Account</h3>
-
-    <!-- Form for logging in. Uses POST method to submit the data to the /login endpoint -->
-    <form name="f" th:action="@{/login}" method="POST">
-
-        <!-- Success message when the user logs out, conditional rendering based on the 'logout' param -->
-        <label for="f" th:if="${param.logout}" class="text-success" style="margin-bottom: 10px; margin-left: 10px;">
-            You have been logged out.
-        </label> <br th:if="${param.logout}">
-
-        <!-- The 'username' input field. The 'uid' field is mapped to 'username' for Spring Security authentication -->
-        <div class="form-group mb-2 mr-sm-2">
-        <input type="text" id='username' name="username" placeholder="GitHub ID" size="20" required
-                    style="margin-bottom: 10px; margin-left: 10px;"> 
+    <div class="login-container">
+        <div class="login-header">
+            <h2>Welcome Back</h2>
+            <p>Sign in to Hunger Heroes</p>
         </div>
+
+        <!-- Form for logging in -->
+        <form name="f" th:action="@{/login}" method="POST">
+
+            <!-- Success message when the user logs out -->
+            <div th:if="${param.logout}" class="alert-success">
+                ✓ You have been logged out successfully.
+            </div>
+
+            <!-- Error message when login fails -->
+            <div th:if="${param.error}" class="alert-error">
+                ✗ Invalid username or password.
+            </div>
+
+            <!-- Username input field -->
+            <input type="text" id='username' name="username" placeholder="GitHub ID" 
+                   class="form-input" required>
+
+            <!-- Password input field -->
+            <input type="password" id="password" name="password" placeholder="Password" 
+                   class="form-input" required>
+
+            <!-- Submit button -->
+            <button class="btn-login" type="submit">
+                Sign In
+            </button>
+        </form>
         
-
-        <!-- Password input field with added margin for spacing -->
-        <div class="form-group mb-2 mr-sm-2">
-                <input type="password" id="password" name="password" placeholder="Password" size="20" required
-                        style="margin-bottom: 10px; margin-left: 10px;"> 
+        <div class="login-links">
+            <a th:href="@{/mvc/person/create}">Create Account</a>
+            <a th:href="@{/mvc/person/reset}">Forgot Password?</a>
         </div>
-
-        <!-- Error message section displayed when login fails, conditional rendering based on the 'error' param -->
-        <label for="f" th:if="${param.error}" class="text-warning" style="margin-bottom: 10px; margin-left: 10px;">
-            Invalid username and password.
-        </label> <br th:if="${param.error}">
-
-        <!-- Submit button for the form, with added margin for spacing -->
-        <button class="btn btn-secondary" type="submit" style="margin-left: 10px;">
-            Submit
-        </button>
-    </form>
-    <div style="margin-top: 10px;">
-        <!-- Link to the signup page for users who don't have an account, with added left margin -->
-        <a th:href="@{/mvc/person/create}" style="margin-left: 10px;">Sign Up</a>
-
-        <!-- Link to the signup page for users who don't have an account, with added left margin -->
-        <a th:href="@{/mvc/person/reset}" style="margin-left: 10px;">Forgot Password?</a>
     </div>
-
 </th:block>
-<!-- End of the body fragment -->
 
 <th:block layout:fragment="script">
     <script>
         const form = document.querySelector("form");
         form.addEventListener("submit", (event) => {
-            event.submitter.innerHTML = "<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>";
+            event.submitter.innerHTML = "<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span> Signing in...";
         })
     </script>
 </th:block>

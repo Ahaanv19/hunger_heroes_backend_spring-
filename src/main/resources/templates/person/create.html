@@ -3,86 +3,212 @@
     layout:decorate="~{layouts/base}" lang="en">
 
 <!-- page style -->
-<th:block layout:fragment="style" th:remove="tag"></th:block>
-
-<!-- page script -->
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        .signup-container {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .signup-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .signup-header h2 {
+            color: #1565C0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .signup-header p {
+            color: #546E7A;
+            opacity: 0.9;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            margin-bottom: 1rem;
+            background-color: #F5F7FA;
+            border: 1px solid #CFD8DC;
+            border-radius: 4px;
+            color: #263238;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #1976D2;
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+        }
+        
+        .form-input::placeholder {
+            color: #90A4AE;
+        }
+        
+        .btn-signup {
+            width: 100%;
+            padding: 12px;
+            background-color: #1976D2;
+            border: none;
+            border-radius: 4px;
+            color: #FFFFFF;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.15s;
+            margin-top: 0.5rem;
+        }
+        
+        .btn-signup:hover {
+            background-color: #1565C0;
+        }
+        
+        .btn-verify {
+            width: 100%;
+            padding: 12px;
+            background-color: #42A5F5;
+            border: none;
+            border-radius: 4px;
+            color: #FFFFFF;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.15s;
+        }
+        
+        .btn-verify:hover {
+            background-color: #1E88E5;
+        }
+        
+        .signup-links {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #E0E0E0;
+        }
+        
+        .signup-links a {
+            color: #1565C0;
+            text-decoration: none;
+        }
+        
+        .signup-links a:hover {
+            color: #0D47A1;
+            text-decoration: underline;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1rem;
+            color: #455A64;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #1976D2;
+        }
+        
+        .error-text {
+            color: #C62828;
+            font-size: 0.85rem;
+            margin-top: -0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</th:block>
 
 <head>
-    <!--script for person-verifcation-->
     <script type="text/javascript" src="/static/js/person/person-verification.js"
         th:src="@{/js/person/person-verification.js}"></script>
 </head>
 
 <!-- page title -->
-<th:block layout:fragment="title" th:remove="tag">Create Account</th:block>
+<th:block layout:fragment="title" th:remove="tag">Create Account - Hunger Heroes</th:block>
 
 <!-- Main body content for the page -->
 <th:block layout:fragment="body" th:remove="tag">
-    <!-- Form content container -->
-    <div class="container">
-        <h3>Create New Account</h3>
+    <div class="signup-container">
+        <div class="signup-header">
+            <h2>Join Hunger Heroes</h2>
+            <p>Create an account to start donating</p>
+        </div>
 
         <form class="form-inline" action="#" th:action="@{/mvc/person/create}" th:object="${person}" method="POST"
             onsubmit="validateForm(event)">
 
             <!-- GitHub ID input field -->
-            <div class="input-group mb-2 mr-sm-2" id="feild0">
-                <input type="text" th:field="*{uid}" id="uid" placeholder="Enter GitHub ID" oninput="handleTyping()">
-                <small th:if="${#fields.hasErrors('uid')}" th:errors="*{uid}">GitHub ID Error</small>
+            <div id="feild0">
+                <input type="text" th:field="*{uid}" id="uid" placeholder="Enter GitHub ID" 
+                       class="form-input" oninput="handleTyping()">
+                <small th:if="${#fields.hasErrors('uid')}" th:errors="*{uid}" class="error-text">GitHub ID Error</small>
             </div>
 
-            <!-- Email Code Input feild for if verifying with email-->
-            <div class="input-group mb-2 mr-sm-2" id="feild0.5" style="display: none;">
-                <input type="text" id="code" placeholder="Enter Email Code" oninput="handleTyping2()">
+            <!-- Email Code Input field for verification -->
+            <div id="feild0.5" class="hidden">
+                <input type="text" id="code" placeholder="Enter Email Code" class="form-input" oninput="handleTyping2()">
             </div>
 
             <!-- Display Name input field -->
-            <div class="input-group mb-2 mr-sm-2" id="feild1" style="display: none;">
-                <input type="text" th:field="*{name}" id="name" placeholder="Display Name">
-                <small th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Username Error</small>
+            <div id="feild1" class="hidden">
+                <input type="text" th:field="*{name}" id="name" placeholder="Display Name" class="form-input">
+                <small th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-text">Username Error</small>
             </div>
 
             <!-- Email input field -->
-            <div class="input-group mb-2 mr-sm-2" id="feild2" style="display: none;">
-                <input type="email" th:field="*{email}" id="email" placeholder="Email Address" required>
-                <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</small>
+            <div id="feild2" class="hidden">
+                <input type="email" th:field="*{email}" id="email" placeholder="Email Address" class="form-input" required>
+                <small th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-text">Email Error</small>
             </div>
 
             <!-- Password input field -->
-            <div class="form-group mb-2 mr-sm-2" id="feild3" style="display: none;">
-                <input type="password" th:field="*{password}" id="password" placeholder="Password">
-                <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</small>
+            <div id="feild3" class="hidden">
+                <input type="password" th:field="*{password}" id="password" placeholder="Password" class="form-input">
+                <small th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-text">Password Error</small>
             </div>
 
             <!-- Confirm Password input field -->
-            <div class="form-group mb-2 mr-sm-2" id="feild4" style="display: none;">
-                <input type="password" id="confirm_password" placeholder="Confirm Password">
+            <div id="feild4" class="hidden">
+                <input type="password" id="confirm_password" placeholder="Confirm Password" class="form-input">
             </div>
 
-            <!-- Student Id input field (moved above Kasm Server Request) -->
-            <div class="input-group mb-2 mr-sm-2" id="feild5" style="display: none;">
-                <input type="number" th:field="*{sid}" id="sid" placeholder="Student ID">
-                <small th:if="${#fields.hasErrors('sid')}" th:errors="*{sid}">Student ID Error</small>
+            <!-- Student Id input field -->
+            <div id="feild5" class="hidden">
+                <input type="number" th:field="*{sid}" id="sid" placeholder="Student ID" class="form-input">
+                <small th:if="${#fields.hasErrors('sid')}" th:errors="*{sid}" class="error-text">Student ID Error</small>
             </div>
 
-            <!-- Kasm Server Needed checkbox -->
-            <div class="input-group mb-2 mr-sm-2" id="feild7" style="display: none;">
-                <label for="kasmServerNeeded"> Request Kasm Server: </label>
+            <!-- Kasm Server checkbox -->
+            <div id="feild7" class="hidden checkbox-group">
                 <input type="checkbox" th:field="*{kasmServerNeeded}" id="kasmServerNeeded">
-                <small th:if="${#fields.hasErrors('kasmServerNeeded')}" th:errors="*{ksm}">Kasm Server Needed
-                    Error</small>
+                <label for="kasmServerNeeded">Request Kasm Server</label>
             </div>
 
-            <!-- Verify Account Button-->
-            <button id="verifyButton" onclick="attemptVerify()">verify</button>
+            <!-- Verify Account Button -->
+            <button type="button" id="verifyButton" class="btn-verify" onclick="attemptVerify()">
+                Verify GitHub ID
+            </button>
 
             <!-- Create Account Button -->
-            <button type="submit" class="btn btn-secondary" id="feild8" style="display: none;">Create
-                Account</button>
-
-            <!-- Log In Button aligned to the right -->
-            <a th:href="@{/login}">Log In</a>
+            <button type="submit" class="btn-signup hidden" id="feild8">
+                Create Account
+            </button>
         </form>
+        
+        <div class="signup-links">
+            Already have an account? <a th:href="@{/login}">Sign In</a>
+        </div>
     </div>
 </th:block>
 

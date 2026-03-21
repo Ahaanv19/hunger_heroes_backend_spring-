@@ -1,24 +1,36 @@
 <!DOCTYPE html>
 
-<!-- Begin contact info fragment  -->
+<!-- Begin contact info fragment - Hunger Heroes -->
 <th:block th:fragment="footer">
-    <div class="px-4 py-5 my-5 text-center">
-        <!-- title jump -->
-        <h3 class="display-5 fw-bold">Contact Us</h3>
-        <!-- email jump -->
-        <div class="row justify-content-center">
-            <h4><a href="mailto: opencodingsociety@gmail">opencodingsociety@gmail.com</a></h4>
+    <div class="px-4 py-5 my-5 text-center" style="background-color: #FFFFFF; border-top: 1px solid #E0E0E0;">
+        <!-- Hunger Heroes tagline -->
+        <h3 class="display-6 fw-bold" style="color: #1565C0;">Hunger Heroes</h3>
+        <p class="lead" style="color: #546E7A;">Fighting food waste, feeding communities</p>
+        
+        <!-- Quick Links -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-auto">
+                <a th:href="@{/mvc/donations}" class="btn btn-outline-primary btn-sm mx-1">Donations</a>
+                <a th:href="@{/mvc/donations/stats}" class="btn btn-outline-primary btn-sm mx-1">Statistics</a>
+                <a th:href="@{/mvc/donations/leaderboard}" class="btn btn-outline-primary btn-sm mx-1">Leaderboard</a>
+            </div>
         </div>
-        <!-- social media jumps -->
+        
+        <!-- Contact -->
         <div class="row justify-content-center">
-            <a href=https://github.com/open-coding-society target="_blank"><i class="fa fa-github"></i></a>
-            <a href=https://www.youtube.com/@OpenCodingSociety target="_blank"><i class="fa fa-youtube-play"></i></a>
-            <a href=https://x.com/Open_Coding target="_blank"><i class="fa fa-twitter"></i></a>
+            <h5 style="color: #455A64;">Contact Us</h5>
+            <p><a href="mailto:hungerheroes@example.com" style="color: #1565C0;">hungerheroes@example.com</a></p>
         </div>
-
-        <script>
-            
-        </script>
+        
+        <!-- GitHub Link -->
+        <div class="row justify-content-center mt-3">
+            <a href="https://github.com/Ahaanv19/hunger_heroes_backend_spring-" target="_blank" 
+               class="btn btn-sm" style="background-color: #263238; color: #FFFFFF; border: none;">
+                View on GitHub
+            </a>
+        </div>
+        
+        <p class="mt-4 small" style="color: #90A4AE;">© 2026 Hunger Heroes. Built with Spring Boot.</p>
     </div>
 </th:block>
-<!-- End contact info fragment  -->
+<!-- End contact info fragment -->

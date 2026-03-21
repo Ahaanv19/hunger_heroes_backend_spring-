@@ -1,0 +1,235 @@
+<!DOCTYPE HTML>
+<html xmlns:layout="http://www.w3.org/1999/xhtml" xmlns:th="http://www.w3.org/1999/xhtml"
+    layout:decorate="~{layouts/base}" lang="en">
+
+<th:block layout:fragment="style" th:remove="tag">
+    <style>
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            color: #1565C0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .leaderboard-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .podium {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 2rem 0;
+        }
+        
+        .podium-spot {
+            text-align: center;
+            border-radius: 4px;
+            padding: 1.5rem 2rem;
+            background-color: #FFFFFF;
+            min-width: 120px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .podium-spot.first {
+            order: 2;
+        }
+        
+        .podium-spot.second {
+            order: 1;
+        }
+        
+        .podium-spot.third {
+            order: 3;
+        }
+        
+        .podium-spot .rank {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1565C0;
+        }
+        
+        .podium-spot.first .rank { color: #FFD700; }
+        .podium-spot.second .rank { color: #9E9E9E; }
+        .podium-spot.third .rank { color: #CD7F32; }
+        
+        .podium-spot .name {
+            color: #263238;
+            font-weight: 500;
+            margin: 0.5rem 0;
+            font-size: 0.95rem;
+            word-break: break-word;
+        }
+        
+        .podium-spot .count {
+            color: #1565C0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .podium-spot .label {
+            color: #78909C;
+            font-size: 0.75rem;
+        }
+        
+        .rank-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .rank-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            transition: transform 0.15s;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+        }
+        
+        .rank-item:hover {
+            transform: translateX(4px);
+        }
+        
+        .rank-number {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #E3F2FD;
+            border-radius: 4px;
+            color: #1565C0;
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+        
+        .rank-info {
+            flex: 1;
+        }
+        
+        .rank-name {
+            color: #263238;
+            font-weight: 500;
+        }
+        
+        .rank-count {
+            color: #1565C0;
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #78909C;
+        }
+        
+        .section-title {
+            color: #455A64;
+            margin: 2rem 0 1rem 0;
+            font-size: 1.1rem;
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment="title" th:remove="tag">Leaderboard - Hunger Heroes</th:block>
+
+<th:block layout:fragment="removable-header" th:remove="tag"></th:block>
+
+<th:block layout:fragment="removable-body" th:remove="tag">
+    <div class="container py-4">
+        <div class="page-header text-center">
+            <h1>Donor Leaderboard</h1>
+            <p>Top contributors making a difference</p>
+        </div>
+        
+        <div class="leaderboard-container" id="leaderboardContent">
+            <div class="empty-state">
+                <p>Loading leaderboard...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function loadLeaderboard() {
+            try {
+                const response = await fetch('/api/donations/leaderboard');
+                const data = await response.json();
+                renderLeaderboard(data);
+            } catch (error) {
+                document.getElementById('leaderboardContent').innerHTML = `
+                    <div class="empty-state">
+                        <p>Error loading leaderboard: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function renderLeaderboard(data) {
+            const container = document.getElementById('leaderboardContent');
+            
+            if (!data || data.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>No donors yet. Be the first!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Top 3 podium
+            let podiumHtml = '';
+            if (data.length >= 1) {
+                const ranks = ['#1', '#2', '#3'];
+                const classes = ['first', 'second', 'third'];
+                
+                podiumHtml = '<div class="podium">';
+                for (let i = 0; i < Math.min(3, data.length); i++) {
+                    const [name, count] = Object.entries(data[i])[0];
+                    podiumHtml += `
+                        <div class="podium-spot ${classes[i]}">
+                            <div class="rank">${ranks[i]}</div>
+                            <div class="name">${name}</div>
+                            <div class="count">${count}</div>
+                            <div class="label">donations</div>
+                        </div>
+                    `;
+                }
+                podiumHtml += '</div>';
+            }
+            
+            // Rest of the list
+            let listHtml = '';
+            if (data.length > 3) {
+                listHtml = '<h4 class="section-title">Other Top Donors</h4><ul class="rank-list">';
+                for (let i = 3; i < data.length; i++) {
+                    const [name, count] = Object.entries(data[i])[0];
+                    listHtml += `
+                        <li class="rank-item">
+                            <span class="rank-number">${i + 1}</span>
+                            <div class="rank-info">
+                                <span class="rank-name">${name}</span>
+                            </div>
+                            <span class="rank-count">${count}</span>
+                        </li>
+                    `;
+                }
+                listHtml += '</ul>';
+            }
+            
+            container.innerHTML = podiumHtml + listHtml;
+        }
+        
+        loadLeaderboard();
+    </script>
+</th:block>
+
+</html>
